@@ -1,0 +1,32 @@
+{
+  "name": "pvpcraftv2",
+  "version": "1.0.0",
+  "description": "next generation version of the pvpcraft discord bot.",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"No test command\"",
+    "build": "babel src/ -d build/ -s",
+    "build:watch": "babel -w src/ -d build -s",
+    "build:dist": "babel src/ -d build/ -s --compact=true",
+    "lint": "eslint src/index.js"
+  },
+  "keywords": [
+    "pvpcraft",
+    "discord",
+    "bot"
+  ],
+  "author": "macdja38",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-eslint": "^6.1.2",
+    "babel-polyfill": "^6.13.0",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-es2016": "^6.11.3",
+    "babel-preset-stage-0": "^6.5.0",
+    "eslint": "^3.2.2"
+  },
+  "dependencies": {
+    "discordie": "github:qeled/discordie"
+  }
+}
