@@ -24,7 +24,13 @@ export default class{
       }
     }
 
-    this.client = client;
+    this._client = client;
+  }
+
+  parse({message, channel}) {
+    let args = message.content.split(" ");
+    let command = args.shift();
+    return { command, channel };
   }
 
   parseMessage(message, prefix, id) {
