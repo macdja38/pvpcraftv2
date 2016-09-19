@@ -12,6 +12,9 @@ import CommandParser from "./lib/commandParser";
 var client = new Discordie();
 var pvpcraft = new Pvpcraft();
 var commandParser = new CommandParser({client});
+import libHandler from "./libHandler";
+
+libHandler();
 
 function* jsRocksIsAwesome() {
   yield "JS Rocks is Awesome";
