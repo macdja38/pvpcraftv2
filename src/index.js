@@ -10,25 +10,6 @@ import ConfigJSON from "./utils/configJSON.js";
 //import Warframe from "./Warframe";
 import adapters from "./adapters";
 
-console.log(adapters());
-
-// Generator just for fun!
-function* jsRocksIsAwesome() {
-  yield "JS Rocks is Awesome";
-  yield "JS Rocks says JavaScript Rocks";
-  return "because JavaScript really rocks";
-}
-
-var jsRocks = jsRocksIsAwesome();
-
-/* eslint-disable */
-console.log(jsRocks.next());
-console.log(jsRocks.next());
-console.log(jsRocks.next());
-/* eslint-enable */
-
-// End generator
-
 // Instantiate Objects
 
 var authJSON = new ConfigJSON({fileName: "auth"});
