@@ -1,0 +1,12 @@
+{
+  "adapters": [
+    {
+      "name": "Discordie PvPCraft",
+      "adapter": "discordie",
+      "included": true,
+      "auth": {
+        "token": "token goes here."
+      }
+    }
+  ]
+}
