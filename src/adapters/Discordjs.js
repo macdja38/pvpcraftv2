@@ -2,8 +2,13 @@
  * Created by macdja38 on 2016-09-18.
  */
 
+"use strict";
+
 import Adapter from "./Adapter";
 import Discord from "discord.js";
+import Message from "../events/Message";
+import Guild from "../events/Guild";
+import User from "../events/User";
 
 export default class DiscordjsAdapter extends Adapter {
   constructor({configJSON, adapterSettings}) {
@@ -18,9 +23,9 @@ export default class DiscordjsAdapter extends Adapter {
     return "discordjs";
   }
 
-  login() {
-    console.log(this._configJSON);
-    this._client.login(this._adapterSettings.auth.token);
+  async login() {
+    this._client.on("error", e => console.error("Discordjs error", e));
+    await this._client.login(this._adapterSettings.auth.token);
     this.startEvents();
   }
 
@@ -32,7 +37,38 @@ export default class DiscordjsAdapter extends Adapter {
     });
 
     this._client.on("message", message => {
+      this._commandHandler.onMessage(new DiscordjsMessage(message));
       console.log(`discordjs ${this._client.user.username} ${message.author.username} ${message.content}`);
     });
+  }
+}
+
+class DiscordjsMessage extends Message {
+  constructor(message) {
+    super(message);
+  }
+
+  get guild() {
+    return new DiscordjsGuild(this._message.guild);
+  }
+
+  get content() {
+    return this._message.content;
+  }
+
+  get author() {
+    return new DiscordjsUser(this._message.author);
+  }
+}
+
+class DiscordjsGuild extends Guild {
+  constructor(guild) {
+    super(guild);
+  }
+}
+
+class DiscordjsUser extends User {
+  constructor(guild) {
+    super(guild);
   }
 }

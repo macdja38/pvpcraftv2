@@ -4,11 +4,15 @@
 
 import Adapter from "./Adapter";
 import Discord from "eris";
+import Message from "../events/Message";
+import Guild from "../events/Guild";
+import User from "../events/User";
 
 export default class ErisAdapter extends Adapter {
   constructor({configJSON, adapterSettings}) {
     super();
     //noinspection JSUnresolvedVariable
+    this._event = new Message();
     this._configJSON = configJSON;
     this._adapterSettings = adapterSettings;
     this._client = new Discord(this._adapterSettings.auth.token);
@@ -18,9 +22,10 @@ export default class ErisAdapter extends Adapter {
     return "eris";
   }
 
-  login() {
+  async login() {
+    this._client.on("error", e => console.error("Eris error", e));
     console.log(this._configJSON);
-    this._client.connect();
+    await this._client.connect();
     this.startEvents();
   }
 
@@ -32,7 +37,43 @@ export default class ErisAdapter extends Adapter {
     });
 
     this._client.on("messageCreate", message => {
+      this._commandHandler.onMessage(new ErisMessage(message, this._client));
       console.log(`eris ${this._client.user.username} ${message.author.username} ${message.content}`);
     });
+  }
+}
+
+class ErisMessage extends Message {
+  constructor(message, client) {
+    super(message);
+    this._client = client;
+  }
+
+  get guild() {
+    return new ErisGuild(this._message.guild);
+  }
+
+  get content() {
+    return this._message.content;
+  }
+
+  get author() {
+    return new ErisUser(this._message.author);
+  }
+
+  reply(string) {
+    this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`);
+  }
+}
+
+class ErisGuild extends Guild {
+  constructor(guild) {
+    super(guild);
+  }
+}
+
+class ErisUser extends User {
+  constructor(guild) {
+    super(guild);
   }
 }

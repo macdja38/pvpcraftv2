@@ -4,6 +4,9 @@
 
 export default class Adapter {
   constructor() {
+  }
 
+  register(commandHandler) {
+    this._commandHandler = commandHandler;
   }
 }

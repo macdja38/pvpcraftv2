@@ -4,6 +4,9 @@
 
 import Adapter from "./Adapter";
 import Discordie from "discordie";
+import Message from "../events/Message";
+import Guild from "../events/Guild";
+import User from "../events/User";
 
 export default class DiscordieAdapter extends Adapter {
   constructor({configJSON, adapterSettings}) {
@@ -18,9 +21,8 @@ export default class DiscordieAdapter extends Adapter {
     return "discordie";
   }
 
-  login() {
-    console.log(this._configJSON);
-    this._client.connect({
+  async login() {
+    await this._client.connect({
       token: this._adapterSettings.auth.token,
       reconnect: true
     });
@@ -35,6 +37,7 @@ export default class DiscordieAdapter extends Adapter {
     });
 
     this._client.Dispatcher.on("MESSAGE_CREATE", e => {
+      this._commandHandler.onMessage(new DiscordieMessage(e));
       console.log(`discordie ${this._client.User.username} ${e.message.author.username} ${e.message.content}`);
     });
 
@@ -44,5 +47,35 @@ export default class DiscordieAdapter extends Adapter {
       console.log(data.before); //eslint-disable-line no-console
       console.log(data.after); //eslint-disable-line no-console
     });
+  }
+}
+
+class DiscordieMessage extends Message {
+  constructor({message}) {
+    super(message);
+  }
+
+  get guild() {
+    return new DiscordieGuild(this._message.guild);
+  }
+
+  get content() {
+    return this._message.content;
+  }
+
+  get author() {
+    return new DiscordieUser(this._message.author);
+  }
+}
+
+class DiscordieGuild extends Guild {
+  constructor(guild) {
+    super(guild);
+  }
+}
+
+class DiscordieUser extends User {
+  constructor(guild) {
+    super(guild);
   }
 }
