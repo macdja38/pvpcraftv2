@@ -1,6 +1,7 @@
 /**
  * Created by macdja38 on 2016-08-08.
  */
+"use strict";
 
 import Command from "../types/command";
 

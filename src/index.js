@@ -9,6 +9,7 @@ import "source-map-support/register";
 import ConfigJSON from "./utils/configJSON.js";
 //import Warframe from "./Warframe";
 import adapters from "./adapters";
+import CommandHandler from "./lib/CommandHandler.js";
 
 // Instantiate Objects
 
@@ -33,6 +34,12 @@ for (let adapterSettings of adaptersJSON.get("adapters", {stringThrow: "adapters
   let foundAdapter = availableAdapters.find(a => a.name === adapterSettings.adapter);
   console.log(foundAdapter);
   adaptersArray.push(new foundAdapter({ adapterSettings}));
+}
+
+var commandHandler = new CommandHandler(adaptersArray);
+
+for (let adapter of adaptersArray) {
+  adapter.register(commandHandler);
 }
 
 for (let adapter of adaptersArray) {
