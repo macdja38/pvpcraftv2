@@ -17,6 +17,10 @@ export default class DiscordieAdapter extends Adapter {
     this._client = new Discordie();
   }
 
+  get adapter() {
+    return "discordie"
+  }
+
   static get name() {
     return "discordie";
   }
@@ -53,6 +57,10 @@ export default class DiscordieAdapter extends Adapter {
 class DiscordieMessage extends Message {
   constructor({message}) {
     super(message);
+  }
+
+  get adapter() {
+    return "discordie"
   }
 
   get guild() {

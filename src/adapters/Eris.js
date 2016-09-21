@@ -49,6 +49,10 @@ class ErisMessage extends Message {
     this._client = client;
   }
 
+  get adapter() {
+    return "eris"
+  }
+
   get guild() {
     return new ErisGuild(this._message.guild);
   }
@@ -62,7 +66,7 @@ class ErisMessage extends Message {
   }
 
   reply(string) {
-    this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`);
+    return this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`);
   }
 }
 
@@ -73,7 +77,11 @@ class ErisGuild extends Guild {
 }
 
 class ErisUser extends User {
-  constructor(guild) {
-    super(guild);
+  constructor(user) {
+    super(user);
   }
+
+  /* get highestRole() {
+    return this._user.roles.reduce((prev, role) => !prev || role.position > prev.position || (role.position === prev.position && role.id < prev.id) ? role : prev);
+  } */
 }

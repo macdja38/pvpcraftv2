@@ -10,6 +10,6 @@ export default class Message {
   }
 
   reply(string) {
-    this._message.reply(string);
+    return this._message.reply(string);
   }
 }

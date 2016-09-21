@@ -5,7 +5,7 @@
 "use strict";
 
 export default class User {
-  constructor() {
-
+  constructor(user) {
+    this._user = user;
   }
 }

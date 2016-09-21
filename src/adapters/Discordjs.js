@@ -48,6 +48,14 @@ class DiscordjsMessage extends Message {
     super(message);
   }
 
+  get adapter() {
+    return "discordjs"
+  }
+
+  get member() {
+    return new DiscordjsMember(this._message.author, this._message.guild);
+  }
+
   get guild() {
     return new DiscordjsGuild(this._message.guild);
   }
@@ -68,7 +76,24 @@ class DiscordjsGuild extends Guild {
 }
 
 class DiscordjsUser extends User {
-  constructor(guild) {
-    super(guild);
+  constructor(user) {
+    super(user);
   }
 }
+
+class DiscordjsMember extends DiscordjsUser {
+  constructor(user, guild) {
+    super(user);
+    this._guild = guild;
+  }
+
+  get highestRole() {
+    return this._guild.members.find("id", this._user.id).highestRole.name.replace(/@/g, "AT");
+  }
+
+  get highestRole() {
+    return this.roles.reduce((prev, role) =>
+      !prev || role.position > prev.position ||(role.position === prev.position && role.id < prev.id) ? role : prev);
+  }
+}
+
