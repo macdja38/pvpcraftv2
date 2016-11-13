@@ -2,7 +2,8 @@
  * Created by macdja38 on 2016-08-07.
  */
 
-
+import Bluebird from "bluebird";
+global.Promise = Bluebird;
 // Import sources
 import "babel-core/register";
 import "source-map-support/register";
