@@ -4,5 +4,5 @@
 import "source-map-support/register";
 
 module.export = {
-  "Hello I'm {1}":"Hello I'm {1}",
+  "Hello I'm {{1}}":"Hello I'm {{1}}",
 };
