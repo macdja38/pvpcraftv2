@@ -42,3 +42,4 @@ jspm_packages
 
 # Config files
 config/*.json
+config/config/*.json

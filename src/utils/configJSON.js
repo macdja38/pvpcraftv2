@@ -14,7 +14,7 @@ export default class ConfigJSON {
    */
   constructor({fileName}) {
     this._fileName = fileName;
-    this._filePath = path.join(__dirname, `../../config/${this._fileName}.json`);
+    this._filePath = path.join(__dirname, `../../config/config/${this._fileName}.json`);
     this._fileExamplePath = path.join(__dirname, `../../config/example/${this._fileName}.example.json`);
     this.reload();
   }
