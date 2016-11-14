@@ -12,4 +12,8 @@ export default class Message {
   reply(string) {
     return this._message.reply(string);
   }
+
+  sendMessage(string) {
+    return this._message.channel.sendMessage(string);
+  }
 }

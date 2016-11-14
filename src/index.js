@@ -10,6 +10,7 @@ import "source-map-support/register";
 import ConfigJSON from "./utils/configJSON.js";
 //import Warframe from "./Warframe";
 import adapters from "./adapters";
+import ModuleLoader from "./lib/ModuleLoader.js";
 import CommandHandler from "./lib/CommandHandler.js";
 
 // Instantiate Objects
@@ -42,6 +43,9 @@ var commandHandler = new CommandHandler(adaptersArray);
 for (let adapter of adaptersArray) {
   adapter.register(commandHandler);
 }
+
+var moduleLoader = new ModuleLoader();
+moduleLoader.loadAll();
 
 for (let adapter of adaptersArray) {
   adapter.login();
