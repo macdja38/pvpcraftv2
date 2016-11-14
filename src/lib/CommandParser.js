@@ -3,45 +3,70 @@
  */
 "use strict";
 
-import Command from "../types/command";
+import Command from "../Types/userCommand";
+import { clean } from "../utils/utils.js"
 
-const regargs = /^((?:.|\n)*?)(?= -|$)/;
-const regAll = /(?:(?:\s--)(\w+).(\n|.*?)(?= -|\n|$)|(?:\s-)([^-]*?)(?= -|\n|$))/g;
+const regArgs = /^((?:.|\n)*?)(?= -|$)/;
+const regFlagsAndOptions = /(?:(?:\s--)(\w+).(\n|.*?)(?= -|\n|$)|(?:\s-)([^-]*?)(?= -|\n|$))/g;
 
-const defaults = {
-  allowMention: false,
-  botName: false
+export const getPrefix = function (content, prefixes, id) {
+  var m = content.trim();
+  for (let i in prefixes) {
+    if (m.indexOf(prefixes[i].toLowerCase()) === 0) {
+      m = m.substr(prefixes[i].length);
+      return { prefix: clean(prefixes[i]), content: m };
+    }
+  }
+  // see if the user is mentioned
+  let mentionRegex = new RegExp(`^<@!?${id}>`);
+  if (mentionRegex.test(m)) {
+    m = m.replace(mentionRegex, "");
+    return { prefix: `<@${id}>`, content: m };
+  }
+  return false;
 };
 
-export default class{
-  constructor({ client, options }) { // eslint-disable-line no-unused-vars
-    if (!options) {
-      options = {};
+export const dissectMessage = function (content) {
+  let args = regArgs.exec(content)[1].trim().split(" ");
+  for (let i of args) {
+    if (args[i] === "") {
+      args.splice(i, 1);
     }
-
-    for (var key in defaults) {
-      if (!options.hasOwnProperty(key)) {
-        options[key] = defaults[key];
-      }
+  }
+  let command = args.shift();
+  let flags = [];
+  let options = [];
+  var myArray;
+  while ((myArray = regFlagsAndOptions.exec(content)) !== null) {
+    if (myArray[1] && myArray[2]) {
+      options[myArray[1]] = myArray[2];
     }
-
-    this._client = client;
+    if (myArray[3]) {
+      flags = flags.concat(myArray[3].split(""));
+    }
   }
+  return { command, args, options, flags }
+};
 
-  parse({message, channel}) {
-    let args = message.content.split(" ");
-    let command = args.shift();
-    return { command, channel };
+export const parse = function ({message, channel, prefixes, id}) {
+  let options = {};
+  options.content = message.content;
+  options.channel = channel;
+  options.message = message;
+  options.user = message.author;
+  let prefixResult = getPrefix(options.content, prefixes, id);
+  if (prefixResult) {
+    options.content = prefixResult.content;
+    options.prefix = prefixResult.prefix;
+    let info = dissectMessage(options.content);
+    if (info) {
+      options.command = info.command;
+      options.args = info.args;
+      options.options = info.args;
+      options.flags = info.flags;
+    }
   }
+  return new Command(options);
+};
 
-  parseMessage(message, prefix, id) {
-    let { prefixUsed, command, args } = this.dissectContent(message.content, prefix, id);
-    return new Command({
-      prefix: prefixUsed, command, args
-    });
-  }
-
-  dissectContent() {
-
-  }
-}
+export default parse;

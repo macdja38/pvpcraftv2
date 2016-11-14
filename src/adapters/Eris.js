@@ -50,7 +50,7 @@ class ErisMessage extends Message {
   }
 
   get adapter() {
-    return "eris"
+    return "eris";
   }
 
   get guild() {
@@ -63,6 +63,14 @@ class ErisMessage extends Message {
 
   get author() {
     return new ErisUser(this._message.author);
+  }
+
+  get client() {
+    return this._client;
+  }
+
+  get channel() {
+    return this._message.channel;
   }
 
   reply(string) {
