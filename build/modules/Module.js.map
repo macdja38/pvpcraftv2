@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/modules/Module.js"],"names":["Module"],"mappings":";;;;;AACO,MAAMA,MAAN,CAAa;;QAAPA,M,GAAAA,M;kBAIEA,M","file":"Module.js","sourcesContent":["\r\nexport class Module {\r\n\r\n}\r\n\r\nexport default Module;"]}

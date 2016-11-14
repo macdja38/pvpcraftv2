@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/languages/english.js"],"names":["module","export"],"mappings":";;AAGA;;AAEAA,OAAOC,MAAP,GAAgB;AACd,qBAAkB;AADJ,CAAhB,C,CALA","file":"english.js","sourcesContent":["/**\n * Created by macdja38 on 2016-08-07.\n */\nimport \"source-map-support/register\";\n\nmodule.export = {\n  \"Hello I'm {{1}}\":\"Hello I'm {{1} }\",\n};"]}
