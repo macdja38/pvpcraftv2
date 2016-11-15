@@ -39,7 +39,8 @@ export class Alerts extends Command {
     process.nextTick(() => {
       let canvas = new Canvas(128, 128), ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, 128, 128);
-      ctx.drawImage(hatImg, -15, -30, 200, 100);
+      ctx.rotate(30/180);
+      ctx.drawImage(hatImg, -70, -55, 300, 130);
       let stream = canvas.pngStream();
       let buffers = [];
       stream.on('data', (buffer) => {
