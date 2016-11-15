@@ -40,7 +40,15 @@ export class Alerts extends Command {
       let canvas = new Canvas(128, 128), ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, 128, 128);
       ctx.drawImage(hatImg, 0, 0, 128, 128);
-      command.sendMessage("Here is your hat!", {name: "hat.png", file: canvas.pngStream()});
+      let stream = canvas.pngStream();
+      let buffers = [];
+      stream.on('data', (buffer) => {
+        buffers.push(buffer);
+      });
+      stream.on('end', () => {
+        let buffer = Buffer.concat(buffers);
+        command.sendMessage("Here is your hat!", {name: "hat.png", file: buffer});
+      });
     })
   }
 

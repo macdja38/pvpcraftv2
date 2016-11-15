@@ -55,7 +55,15 @@ class Alerts extends _Command2.default {
             ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, 128, 128);
         ctx.drawImage(hatImg, 0, 0, 128, 128);
-        command.sendMessage("Here is your hat!", { name: "hat.png", file: canvas.pngStream() });
+        let stream = canvas.pngStream();
+        let buffers = [];
+        stream.on('data', function (buffer) {
+          buffers.push(buffer);
+        });
+        stream.on('end', function () {
+          let buffer = Buffer.concat(buffers);
+          command.sendMessage("Here is your hat!", { name: "hat.png", file: buffer });
+        });
       });
     })();
   }
