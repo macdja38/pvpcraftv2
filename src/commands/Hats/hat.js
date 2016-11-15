@@ -18,9 +18,9 @@ let requirements = ["Warframe"];
 export class Alerts extends Command {
   constructor(...args) {
     super(...args, {
-      aliases: ['hat'],
-      module: 'warframe',
-      nodes: ['warframe.alert'],
+      aliases: ["hat"],
+      module: "warframe",
+      nodes: ["warframe.alert"],
       description: "Display the current warframe alerts.",
       usage: []
     });
@@ -30,26 +30,36 @@ export class Alerts extends Command {
     let msg = command.message;
     let avatarURL = msg.author.avatarURL;
 
-    let imgPromise = getImageFromUrl(avatarURL);
+    let imgPromise;
+    if (avatarURL) {
+      imgPromise = getImageFromUrl(avatarURL);
+    } else {
+      imgPromise = getImageFromUrl("https://canary.discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png");
+    }
     let hatPromise = getImageFromFile('./resources/hat.png');
 
     let img = await imgPromise;
     let hatImg = await hatPromise;
 
     process.nextTick(() => {
-      let canvas = new Canvas(128, 128), ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, 128, 128);
-      ctx.rotate(30/180);
-      ctx.drawImage(hatImg, -70, -55, 300, 130);
-      let stream = canvas.pngStream();
-      let buffers = [];
-      stream.on('data', (buffer) => {
-        buffers.push(buffer);
-      });
-      stream.on('end', () => {
-        let buffer = Buffer.concat(buffers);
-        command.sendMessage("Here is your hat!", {name: "hat.png", file: buffer});
-      });
+      try {
+        let canvas = new Canvas(128, 128), ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 128, 128);
+        ctx.rotate(30 / 180);
+        ctx.drawImage(hatImg, -70, -55, 300, 130);
+        let stream = canvas.pngStream();
+        let buffers = [];
+        stream.on('data', (buffer) => {
+          buffers.push(buffer);
+        });
+        stream.on('end', () => {
+          let buffer = Buffer.concat(buffers);
+          command.sendMessage("Here is your hat!", {name: "hat.png", file: buffer});
+        });
+      } catch(errors){
+        command.sendMessage(`Sorry the error ${errors} occurred while processing your command, make sure you have a non-default avatar`);
+        console.error("error", errors);
+      }
     })
   }
 

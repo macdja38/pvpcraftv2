@@ -31,22 +31,16 @@ class CommandHandler {
     let userCommand = (0, _CommandParser2.default)({ message, channel: message.channel, prefixes: ["!!", "*"], id: message.client.user.id });
     userCommand.setLanguage("en");
     this._commands.forEach(c => {
-      console.log(c.aliases, userCommand.command);
       if (c.aliases.indexOf(userCommand.command) > -1) {
         c.exec(userCommand);
-        userCommand.reply("Wow, that's a command");
       }
     });
-    console.log("command", userCommand);
   }
 
   loadAllCommands() {
     this._commands = [];
-    console.log((0, _commands2.default)());
     (0, _commands2.default)().forEach(c => c.forEach(c => this._commands.push(new c())));
-    console.log(this._commands);
     this._commands.forEach(c => c.init());
-    console.log("commands", (0, _commands2.default)());
   }
 }
 exports.default = CommandHandler;
