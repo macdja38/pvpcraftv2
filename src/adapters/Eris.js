@@ -73,8 +73,8 @@ class ErisMessage extends Message {
     return this._message.channel;
   }
 
-  reply(string) {
-    return this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`);
+  reply(string, ...args) {
+    return this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`, ...args);
   }
 }
 

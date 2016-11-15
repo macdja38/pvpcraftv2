@@ -26,16 +26,16 @@ exports.default = class {
     return this._command;
   }
 
-  sendMessage(text) {
-    this.message.sendMessage(text);
+  sendMessage(...args) {
+    this.message.sendMessage(...args);
   }
 
   get message() {
     return this._message;
   }
 
-  reply(text) {
-    this.message.reply(text);
+  reply(...args) {
+    this.message.reply(...args);
   }
 
   setLanguage(language) {

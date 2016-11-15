@@ -11,7 +11,7 @@ var _Command2 = _interopRequireDefault(_Command);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 /**
  * Created by macdja38 on 2016-11-13.
@@ -20,6 +20,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var https = new require('https');
 
 var request = require('request').defaults({ encoding: null });
+
+var fs = require('fs');
 
 var Canvas = require('canvas'),
     Image = Canvas.Image;
@@ -42,19 +44,18 @@ class Alerts extends _Command2.default {
       let msg = command.message;
       let avatarURL = msg.author.avatarURL;
 
-      request.get(avatarURL, function (err, res, image) {
-        console.log(image);
-        console.dir(image);
-        let data = Buffer.from(image);
-        console.log(data);
-        console.dir(data);
-        let img = new Image();
-        img.src = data;
-        process.nextTick(function () {
-          let canvas = new Canvas(128, 128),
-              ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, 128, 128);
-        });
+      let imgPromise = getImageFromUrl(avatarURL);
+      let hatPromise = getImageFromFile('./hat.png');
+
+      let img = yield imgPromise;
+      let hatImg = yield hatPromise;
+
+      process.nextTick(function () {
+        let canvas = new Canvas(128, 128),
+            ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 128, 128);
+        ctx.drawImage(hatImg, 0, 0, 128, 128);
+        command.sendMessage("Here is your hat!", { name: "hat.png", file: canvas.pngStream() });
       });
     })();
   }
@@ -66,4 +67,28 @@ class Alerts extends _Command2.default {
 
 exports.Alerts = Alerts;
 exports.default = Alerts;
+
+
+function getImageFromFile(path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, (err, data) => {
+      if (err) return reject(err);
+      let img = new Image();
+      img.src = data;
+      resolve(img);
+    });
+  });
+}
+
+function getImageFromUrl(url) {
+  return new Promise((resolve, reject) => {
+    request.get(url, (err, res, image) => {
+      if (err) return reject(err);
+      let data = Buffer.from(image);
+      let img = new Image();
+      img.src = data;
+      resolve(img);
+    });
+  });
+}
 //# sourceMappingURL=hat.js.map

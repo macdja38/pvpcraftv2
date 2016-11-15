@@ -6,6 +6,8 @@ var https = new require('https');
 
 var request = require('request').defaults({encoding: null});
 
+var fs = require('fs');
+
 var Canvas = require('canvas')
   , Image = Canvas.Image;
 
@@ -28,19 +30,18 @@ export class Alerts extends Command {
     let msg = command.message;
     let avatarURL = msg.author.avatarURL;
 
-    request.get(avatarURL, (err, res, image)=> {
-      console.log(image);
-      console.dir(image);
-      let data = Buffer.from(image);
-      console.log(data);
-      console.dir(data);
-      let img = new Image;
-      img.src = data;
-      process.nextTick(() => {
-        let canvas = new Canvas(128, 128), ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, 128, 128);
-      })
-    });
+    let imgPromise = getImageFromUrl(avatarURL);
+    let hatPromise = getImageFromFile('./hat.png');
+
+    let img = await imgPromise;
+    let hatImg = await hatPromise;
+
+    process.nextTick(() => {
+      let canvas = new Canvas(128, 128), ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 128, 128);
+      ctx.drawImage(hatImg, 0, 0, 128, 128);
+      command.sendMessage("Here is your hat!", {name: "hat.png", file: canvas.pngStream()});
+    })
   }
 
   init() {
@@ -49,3 +50,26 @@ export class Alerts extends Command {
 }
 
 export default Alerts;
+
+function getImageFromFile(path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, (err, data) => {
+      if (err) return reject(err);
+      let img = new Image;
+      img.src = data;
+      resolve(img);
+    })
+  })
+}
+
+function getImageFromUrl(url) {
+  return new Promise((resolve, reject)=>{
+    request.get(url, (err, res, image)=> {
+      if(err) return reject(err);
+      let data = Buffer.from(image);
+      let img = new Image;
+      img.src = data;
+      resolve(img);
+    });
+  });
+}
