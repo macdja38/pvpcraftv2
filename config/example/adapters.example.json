@@ -4,6 +4,14 @@
       "name": "Discordie PvPCraft",
       "adapter": "discordie",
       "included": true,
+      "status": {
+        "status": "online",
+        "game": {
+          "name": "!!hat for a hat, invite with https://hat.pvpcraft.ca",
+          "type": 0,
+          "url": "https://hat.pvpcraft.ca"
+        }
+      },
       "auth": {
         "token": "token goes here."
       }

@@ -31,6 +31,9 @@ export default class ErisAdapter extends Adapter {
 
   startEvents() {
     this._client.on("ready", () => {
+      if (this._adapterSettings.hasOwnProperty("status")) {
+        this._client.editStatus(this._adapterSettings.status.status, this._adapterSettings.status.game);
+      }
       /* eslint-disable */
       console.log(`Connected as: ${this._client.user.username}`);
       /* eslint-enable */
