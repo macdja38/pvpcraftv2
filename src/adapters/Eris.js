@@ -76,6 +76,10 @@ class ErisMessage extends Message {
   reply(string, ...args) {
     return this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`, ...args);
   }
+
+  sendMessage(...args) {
+    return this.channel.createMessage(...args);
+  }
 }
 
 class ErisGuild extends Guild {
