@@ -31,7 +31,7 @@ export class Alerts extends Command {
     let avatarURL = msg.author.avatarURL;
 
     let imgPromise = getImageFromUrl(avatarURL);
-    let hatPromise = getImageFromFile('./hat.png');
+    let hatPromise = getImageFromFile('./resources/hat.png');
 
     let img = await imgPromise;
     let hatImg = await hatPromise;

@@ -45,7 +45,7 @@ class Alerts extends _Command2.default {
       let avatarURL = msg.author.avatarURL;
 
       let imgPromise = getImageFromUrl(avatarURL);
-      let hatPromise = getImageFromFile('./hat.png');
+      let hatPromise = getImageFromFile('./resources/hat.png');
 
       let img = yield imgPromise;
       let hatImg = yield hatPromise;
