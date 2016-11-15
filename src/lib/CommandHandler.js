@@ -17,7 +17,7 @@ export default class CommandHandler{
   }
 
   onMessage(message) {
-    let userCommand = parse({ message, channel: message.channel, prefixes: ["*"], id: message.client.user.id});
+    let userCommand = parse({ message, channel: message.channel, prefixes: ["!!", "*"], id: message.client.user.id});
     userCommand.setLanguage("en");
     this._commands.forEach(c => {
       console.log(c.aliases, userCommand.command);
