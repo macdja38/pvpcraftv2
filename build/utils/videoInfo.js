@@ -22,7 +22,7 @@ let ytdl = require('ytdl-core');
 let idealFormatIds = ["249", "250", "251", "171", "140", "141", "127", "128", "82", "83", "100", "84", "85", "5", "18", "43", "22", "36", "17", "http_mp3_128_url"];
 
 function getVideoInfo(link) {
-  if (args[0].indexOf("youtu") > -1) {
+  if (link.indexOf("youtu") > -1) {
     return fetchWithYtdl(link).catch(() => fetchWithYoutubeDl(link));
   } else {
     return fetchWithYoutubeDl(link);
@@ -77,7 +77,7 @@ function getStreamUrl(info) {
   // first round, extract anything with opus and feed that through.
   let streamableSource = {};
   let formats = info.formats;
-  streamableSource.sourceURL = this.info.webpage_url || this.info.loaderUrl;
+  streamableSource.sourceURL = info.webpage_url || info.loaderUrl;
   // try and just use itag values
   let formatMap = formats.map(f => getFormatId(f));
   for (let itag of idealFormatIds) {
@@ -91,7 +91,7 @@ function getStreamUrl(info) {
     }
   }
 
-  let opusItems = this.info.formats.filter(f => isEncodedAs(f, "opus"));
+  let opusItems = info.formats.filter(f => isEncodedAs(f, "opus"));
   let webMOpusItems = opusItems.filter(f => isContainer(f, "webm"));
   if (webMOpusItems.length > 0) {
     streamableSource.encoding = "opus";
@@ -101,7 +101,7 @@ function getStreamUrl(info) {
     console.log("Found webm/opus");
     if (this.raven) {
       process.nextTick(() => {
-        let formats = toObj(this.info.formats);
+        let formats = toObj(info.formats);
         formats.chosen = streamableSource;
       });
     }
@@ -111,7 +111,7 @@ function getStreamUrl(info) {
   // let oggItems = opusItems.filter(f => isContainer(f, "ogg"));
 
   // second round, capture anything with a bitrate and no resolution
-  formats = this.info.formats.sort((a, b) => b.abr - a.abr);
+  formats = info.formats.sort((a, b) => b.abr - a.abr);
   if (formats.length > 0) {
     let format = formats.find(f => (f.abr || f.audioBitrate) > 0 && !f.resolution) || formats.find(f => (f.abr || f.audioBitrate) > 0);
     if (format) {
@@ -121,7 +121,7 @@ function getStreamUrl(info) {
       console.log("defaulted to other ", streamableSource.container, streamableSource.encoding);
       if (this.raven) {
         process.nextTick(() => {
-          let formats = toObj(this.info.formats);
+          let formats = toObj(info.formats);
           formats.chosen = streamableSource;
         });
       }
@@ -137,7 +137,7 @@ function getStreamUrl(info) {
       console.log("defaulted to other ", streamableSource.container, streamableSource.encoding);
       if (this.raven) {
         process.nextTick(() => {
-          let formats = toObj(this.info.formats);
+          let formats = toObj(info.formats);
           formats.chosen = streamableSource;
         });
       }
@@ -146,7 +146,7 @@ function getStreamUrl(info) {
   }
   if (this.raven) {
     this.raven.captureException("Could not find a format to queue", {
-      extra: toObj(this.info.formats),
+      extra: toObj(info.formats),
       level: "error"
     });
   }
@@ -159,4 +159,9 @@ function toObj(arr) {
     return o;
   }, {});
 }
+
+exports.default = {
+  getVideoInfo,
+  getStreamUrl
+};
 //# sourceMappingURL=videoInfo.js.map

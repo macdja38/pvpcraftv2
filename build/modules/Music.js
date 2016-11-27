@@ -12,6 +12,10 @@ require("babel-core/register");
 
 require("source-map-support/register");
 
+var _crypto = require("crypto");
+
+var _crypto2 = _interopRequireDefault(_crypto);
+
 var _Module = require("./Module");
 
 var _Module2 = _interopRequireDefault(_Module);
@@ -27,11 +31,12 @@ let request = require("request");
 let table = "music";
 
 class Music extends _Module2.default {
-  constructor({ configDB, authJSON, musicDB, MusicPlayer, adaptersArray }) {
+  constructor({ configDB, videoInfo, authJSON, musicDB, MusicPlayer, adaptersArray }) {
     super();
     this.adapters = adaptersArray;
     this.MusicPlayer = MusicPlayer;
     this.musicDB = musicDB;
+    this.videoInfo = videoInfo;
     this.players = [];
     this.regionCode = "CA";
     this.apiKey = authJSON.get("apiKeys.youtube", false);
@@ -54,7 +59,8 @@ class Music extends _Module2.default {
             if (!text || !voice) return;
             let player = new _this.MusicPlayer(a, guild, text, voice, queue.queue, _this.musicDB, _this);
             // player.init(voice.id);
-            _this.cachingSearch("rock and roll");
+            //this.cachingSearch("rock and roll");
+            _this.getCachingInfoLink("https://www.youtube.com/watch?v=yprjgWwGd1w");
             _this.players.push(player);
           });
         });
@@ -66,20 +72,48 @@ class Music extends _Module2.default {
     })());
   }
 
-  cachingSearch(string) {
+  getStreamUrl(info) {
+    return this.videoInfo.getStreamUrl(info);
+  }
+
+  getCachingInfoLink(link) {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      let cache = yield _this2.musicDB.getSearch(string);
+      let hashedLink = _crypto2.default.createHash("sha256").update(link).digest("hex");
+      return _this2.getCachingInfoHash(hashedLink, link);
+    })();
+  }
+
+  getCachingInfoHash(hashedLink, link) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      let cachedInfo = yield _this3.musicDB.getVid(hashedLink);
+      console.log("cachedInfo", cachedInfo);
+      if (cachedInfo) return cachedInfo;
+      let info = yield _this3.videoInfo.getVideoInfo(link);
+      console.log("fetchedInfo", info);
+      _this3.musicDB.saveVid(hashedLink, link, info);
+      return info;
+    })();
+  }
+
+  cachingSearch(string) {
+    var _this4 = this;
+
+    return _asyncToGenerator(function* () {
+      let cache = yield _this4.musicDB.getSearch(string);
       if (cache) {
         console.log("Cached", cache);
         return cache;
       }
-      let response = yield _this2.search(string);
-      _this2.musicDB.saveSearch(string, response).catch(function (error) {
+      let response = yield _this4.search(string);
+      _this4.musicDB.saveSearch(string, response).catch(function (error) {
         return console.error;
       });
       console.log(response);
+      return response;
     })();
   }
 

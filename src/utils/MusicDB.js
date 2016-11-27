@@ -24,8 +24,14 @@ export class musicDB extends BaseDB {
     return this.r.table(this.table).getAll(...args);
   }
 
-  saveVid(video) {
-    this.table(this.videoCache).insert(video);
+  saveVid(linkHash, link, video) {
+    video.id = linkHash;
+    video.link = link;
+    return this.r.table(this.videoCache).insert(video).run();
+  }
+
+  getVid(hash) {
+    return this.r.table(this.videoCache).get(hash).run();
   }
 
   saveSearch(string, result) {

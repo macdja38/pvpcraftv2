@@ -6,10 +6,10 @@ import "babel-core/register";
 import "source-map-support/register";
 
 export class MusicPlayer{
-  constructor(adapter, guild, text, voice, queue, musicDB, musicPlayer) {
+  constructor(adapter, guild, text, voice, queue, musicDB, music) {
     this._adapter = adapter;
     this._musicDB = musicDB;
-    this.musicPlayer = musicPlayer;
+    this.music = music;
     this.guild = guild;
     this.text = text;
     this.voice = voice;
@@ -31,8 +31,13 @@ export class MusicPlayer{
 
   }
 
-  play() {
-
+  async play() {
+    if (this.queue.length > 0) {
+      console.log("queue", this.queue);
+      let url = this.music.getStreamUrl(await this.music.getCachingInfoLink(this.queue[0].link));
+      console.log(url);
+      this.connection.play(url.url);
+    }
   }
 
   pause() {

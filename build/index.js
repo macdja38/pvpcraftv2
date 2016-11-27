@@ -39,6 +39,10 @@ var _MusicPlayer = require("./utils/MusicPlayer");
 
 var _MusicPlayer2 = _interopRequireDefault(_MusicPlayer);
 
+var _videoInfo = require("./utils/videoInfo");
+
+var _videoInfo2 = _interopRequireDefault(_videoInfo);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -77,6 +81,7 @@ let e = {
   MusicPlayer: _MusicPlayer2.default,
   ConfigJSON: _configJSON2.default,
   authJSON,
+  videoInfo: _videoInfo2.default,
   adaptersJSON,
   adaptersArray
 };

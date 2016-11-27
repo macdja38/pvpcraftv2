@@ -25,6 +25,7 @@ let r = require("rethinkdbdash")({servers: [authJSON.get("database.rethinkdb", {
 import * as utils from "./utils/utils";
 import MusicDB from "./utils/MusicDB";
 import MusicPlayer from "./utils/MusicPlayer"
+import videoInfo from "./utils/videoInfo"
 
 let musicDB = new MusicDB(r);
 
@@ -45,6 +46,7 @@ let e = {
   MusicPlayer,
   ConfigJSON,
   authJSON,
+  videoInfo,
   adaptersJSON,
   adaptersArray,
 };

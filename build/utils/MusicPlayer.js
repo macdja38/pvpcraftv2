@@ -15,10 +15,10 @@ require("source-map-support/register");
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 class MusicPlayer {
-  constructor(adapter, guild, text, voice, queue, musicDB, musicPlayer) {
+  constructor(adapter, guild, text, voice, queue, musicDB, music) {
     this._adapter = adapter;
     this._musicDB = musicDB;
-    this.musicPlayer = musicPlayer;
+    this.music = music;
     this.guild = guild;
     this.text = text;
     this.voice = voice;
@@ -42,7 +42,18 @@ class MusicPlayer {
 
   add(video) {}
 
-  play() {}
+  play() {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      if (_this2.queue.length > 0) {
+        console.log("queue", _this2.queue);
+        let url = _this2.music.getStreamUrl((yield _this2.music.getCachingInfoLink(_this2.queue[0].link)));
+        console.log(url);
+        _this2.connection.play(url.url);
+      }
+    })();
+  }
 
   pause() {}
 }

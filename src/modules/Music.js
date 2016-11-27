@@ -4,6 +4,7 @@
 "use strict";
 import "babel-core/register";
 import "source-map-support/register";
+import crypto from "crypto";
 
 import Module from "./Module";
 
@@ -14,11 +15,12 @@ let request = require("request");
 let table = "music";
 
 export class Music extends Module {
-  constructor({ configDB, authJSON, musicDB, MusicPlayer, adaptersArray }) {
+  constructor({ configDB, videoInfo, authJSON, musicDB, MusicPlayer, adaptersArray }) {
     super();
     this.adapters = adaptersArray;
     this.MusicPlayer = MusicPlayer;
     this.musicDB = musicDB;
+    this.videoInfo = videoInfo;
     this.players = [];
     this.regionCode = "CA";
     this.apiKey = authJSON.get("apiKeys.youtube", false);
@@ -37,12 +39,29 @@ export class Music extends Module {
           let text = guild.getChannel(queue.text_id);
           if (!text || !voice) return;
           let player = new this.MusicPlayer(a, guild, text, voice, queue.queue, this.musicDB, this);
-          // player.init(voice.id);
-          this.cachingSearch("rock and roll");
           this.players.push(player);
         })
       })
     })
+  }
+
+  getStreamUrl(info) {
+    return this.videoInfo.getStreamUrl(info);
+  }
+
+  async getCachingInfoLink(link) {
+    let hashedLink = crypto.createHash("sha256").update(link).digest("hex");
+    return this.getCachingInfoHash(hashedLink, link)
+  }
+
+  async getCachingInfoHash(hashedLink, link) {
+    let cachedInfo = await this.musicDB.getVid(hashedLink);
+    console.log("cachedInfo", cachedInfo);
+    if (cachedInfo) return cachedInfo;
+    let info = await this.videoInfo.getVideoInfo(link);
+    console.log("fetchedInfo", info);
+    this.musicDB.saveVid(hashedLink, link, info);
+    return info;
   }
 
   async cachingSearch(string) {
@@ -54,6 +73,7 @@ export class Music extends Module {
     let response = await this.search(string);
     this.musicDB.saveSearch(string, response).catch(error => console.error);
     console.log(response);
+    return response;
   }
 
   search(string) {
