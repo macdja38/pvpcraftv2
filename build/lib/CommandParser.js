@@ -8,6 +8,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parse = exports.dissectMessage = exports.getPrefix = undefined;
 
+require("babel-core/register");
+
+require("source-map-support/register");
+
 var _userCommand = require("../Types/userCommand");
 
 var _userCommand2 = _interopRequireDefault(_userCommand);

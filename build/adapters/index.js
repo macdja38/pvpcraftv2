@@ -8,6 +8,8 @@ exports.default = function () {
   return dir.filter(f => f.endsWith(".js") && f !== "index.js" && f !== "Adapter.js").map(f => require(path.join(__dirname, f)).default);
 };
 
+require("babel-core/register");
+
 require("source-map-support/register");
 
 var _path = require("path");

@@ -1,8 +1,16 @@
+/**
+ * Created by macdja38 on 2016-09-18.
+ */
+
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+require("babel-core/register");
+
+require("source-map-support/register");
 
 var _Adapter = require("./Adapter");
 
@@ -26,9 +34,7 @@ var _User2 = _interopRequireDefault(_User);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Created by macdja38 on 2016-09-18.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 class DiscordieAdapter extends _Adapter2.default {
   constructor({ configJSON, adapterSettings }) {

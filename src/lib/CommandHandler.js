@@ -2,6 +2,8 @@
  * Created by macdja38 on 2016-09-20.
  */
 "use strict";
+import "babel-core/register";
+import "source-map-support/register";
 
 import parse from "./CommandParser";
 import Commands from "../commands";
@@ -24,6 +26,10 @@ export default class CommandHandler{
         c.exec(userCommand);
       }
     });
+  }
+
+  loadModules(modules) {
+    this.modules = modules;
   }
 
   loadAllCommands() {

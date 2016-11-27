@@ -1,3 +1,6 @@
+/**
+ * Created by macdja38 on 2016-08-07.
+ */
 "use strict";
 
 var _bluebird = require("bluebird");
@@ -24,33 +27,59 @@ var _CommandHandler = require("./lib/CommandHandler.js");
 
 var _CommandHandler2 = _interopRequireDefault(_CommandHandler);
 
+var _utils = require("./utils/utils");
+
+var utils = _interopRequireWildcard(_utils);
+
+var _MusicDB = require("./utils/MusicDB");
+
+var _MusicDB2 = _interopRequireDefault(_MusicDB);
+
+var _MusicPlayer = require("./utils/MusicPlayer");
+
+var _MusicPlayer2 = _interopRequireDefault(_MusicPlayer);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 global.Promise = _bluebird2.default;
 // Import sources
-/**
- * Created by macdja38 on 2016-08-07.
- */
 
 //import Warframe from "./Warframe";
 
 
 // Instantiate Objects
 
-var authJSON = new _configJSON2.default({ fileName: "auth" });
-var adaptersJSON = new _configJSON2.default({ fileName: "adapters" });
+let authJSON = new _configJSON2.default({ fileName: "auth" });
+let adaptersJSON = new _configJSON2.default({ fileName: "adapters" });
 console.log(authJSON);
 console.log(adaptersJSON);
+
+let r = require("rethinkdbdash")({ servers: [authJSON.get("database.rethinkdb", { fallback: false })] });
+
+let musicDB = new _MusicDB2.default(r);
 
 // End instantiating Objects.
 
 // Start importing adapters
 
-var availableAdapters = (0, _adapters2.default)();
+let availableAdapters = (0, _adapters2.default)();
 
 console.log("availableAdapters", availableAdapters);
 
-var adaptersArray = [];
+let adaptersArray = [];
+
+let e = {
+  utils,
+  musicDB,
+  MusicDB: _MusicDB2.default,
+  MusicPlayer: _MusicPlayer2.default,
+  ConfigJSON: _configJSON2.default,
+  authJSON,
+  adaptersJSON,
+  adaptersArray
+};
 
 for (let adapterSettings of adaptersJSON.get("adapters", { stringThrow: "adapters not defined in Adapter.js" })) {
   console.log(adapterSettings.adapter);
@@ -60,14 +89,15 @@ for (let adapterSettings of adaptersJSON.get("adapters", { stringThrow: "adapter
   adaptersArray.push(new foundAdapter({ adapterSettings }));
 }
 
-var commandHandler = new _CommandHandler2.default(adaptersArray);
+let commandHandler = new _CommandHandler2.default(adaptersArray);
 
 for (let adapter of adaptersArray) {
   adapter.register(commandHandler);
 }
 
-var moduleLoader = new _ModuleLoader2.default();
-moduleLoader.loadAll();
+let moduleLoader = new _ModuleLoader2.default(e);
+
+commandHandler.loadModules(moduleLoader.loadAll());
 
 for (let adapter of adaptersArray) {
   adapter.login();

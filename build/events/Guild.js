@@ -7,9 +7,18 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+require("babel-core/register");
+
+require("source-map-support/register");
+
 class Guild {
   constructor(guild) {
     this._guild = guild;
+  }
+
+  getChannel(id) {
+    return this._guild.channels.get(id);
   }
 }
 exports.default = Guild;

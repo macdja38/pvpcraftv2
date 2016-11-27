@@ -3,6 +3,8 @@
  */
 
 "use strict";
+import "babel-core/register";
+import "source-map-support/register";
 
 import Adapter from "./Adapter";
 import Discord from "discord.js";

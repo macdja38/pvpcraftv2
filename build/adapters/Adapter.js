@@ -1,11 +1,15 @@
+/**
+ * Created by macdja38 on 2016-09-18.
+ */
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * Created by macdja38 on 2016-09-18.
- */
+
+require("babel-core/register");
+
+require("source-map-support/register");
 
 class Adapter {
   constructor() {}

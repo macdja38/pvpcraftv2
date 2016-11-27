@@ -1,11 +1,16 @@
+/**
+ * Created by macdja38 on 2016-11-13.
+ */
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * Created by macdja38 on 2016-11-13.
- */
+exports.clean = undefined;
+
+require("babel-core/register");
+
+require("source-map-support/register");
 
 const clean = exports.clean = function clean(text) {
   if (typeof text === "string") {

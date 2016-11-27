@@ -1,6 +1,9 @@
 /**
  * Created by macdja38 on 2016-11-13.
  */
+"use strict";
+import "babel-core/register";
+import "source-map-support/register";
 
 var https = new require('https');
 

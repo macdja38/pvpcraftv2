@@ -1,6 +1,9 @@
 /**
  * Created by macdja38 on 2016-08-08.
  */
+"use strict";
+import "babel-core/register";
+import "source-map-support/register";
 
 export default class{
   constructor({ message, prefix, command, args, options, flags, channel, role, user, language }) { // eslint-disable-line no-unused-vars

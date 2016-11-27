@@ -1,11 +1,16 @@
+/**
+ * Created by macdja38 on 2016-11-13.
+ */
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * Created by macdja38 on 2016-11-13.
- */
+exports.Command = undefined;
+
+require("babel-core/register");
+
+require("source-map-support/register");
 
 class Command {
   constructor(...args) {

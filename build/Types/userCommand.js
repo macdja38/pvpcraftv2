@@ -1,11 +1,15 @@
+/**
+ * Created by macdja38 on 2016-08-08.
+ */
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * Created by macdja38 on 2016-08-08.
- */
+
+require("babel-core/register");
+
+require("source-map-support/register");
 
 exports.default = class {
   constructor({ message, prefix, command, args, options, flags, channel, role, user, language }) {

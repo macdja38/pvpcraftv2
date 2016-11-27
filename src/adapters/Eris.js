@@ -2,6 +2,10 @@
  * Created by macdja38 on 2016-09-18.
  */
 
+"use strict";
+import "babel-core/register";
+import "source-map-support/register";
+
 import Adapter from "./Adapter";
 import Discord from "eris";
 import Message from "../events/Message";
@@ -16,10 +20,27 @@ export default class ErisAdapter extends Adapter {
     this._configJSON = configJSON;
     this._adapterSettings = adapterSettings;
     this._client = new Discord(this._adapterSettings.auth.token);
+    this._ready = this.startReady();
   }
 
   static get name() {
     return "eris";
+  }
+
+  startReady() {
+    return new Promise((resolve, reject) => {
+      this._client.on("ready", ()=>{
+        resolve(true);
+      })
+    })
+  }
+
+  get ready() {
+    return this._ready;
+  }
+
+  get serverIds() {
+    return this._client.guilds.map(g => g.id);
   }
 
   async login() {
@@ -43,6 +64,14 @@ export default class ErisAdapter extends Adapter {
       this._commandHandler.onMessage(new ErisMessage(message, this._client));
       console.log(`eris ${this._client.user.username} ${message.author.username} ${message.content}`);
     });
+  }
+
+  joinVoiceChannel(channelId) {
+    return this._client.joinVoiceChannel(channelId);
+  }
+
+  getGuild(id) {
+    return new ErisGuild(this._client.guilds.get(id));
   }
 }
 

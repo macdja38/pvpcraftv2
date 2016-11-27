@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../src/modules/Module.js"],"names":["Module"],"mappings":";;;;;AACO,MAAMA,MAAN,CAAa;;QAAPA,M,GAAAA,M;kBAIEA,M","file":"Module.js","sourcesContent":["\nexport class Module {\n\n}\n\nexport default Module;"]}
+{"version":3,"sources":["../../src/modules/Module.js"],"names":["Module"],"mappings":"AAAA;;;;;;;AACA;;AACA;;AAEO,MAAMA,MAAN,CAAa;;QAAPA,M,GAAAA,M;kBAIEA,M","file":"Module.js","sourcesContent":["\"use strict\";\nimport \"babel-core/register\";\nimport \"source-map-support/register\";\n\nexport class Module {\n\n}\n\nexport default Module;"]}

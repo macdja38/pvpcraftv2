@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Alerts = undefined;
 
+require("babel-core/register");
+
+require("source-map-support/register");
+
 var _Command = require("../Command");
 
 var _Command2 = _interopRequireDefault(_Command);

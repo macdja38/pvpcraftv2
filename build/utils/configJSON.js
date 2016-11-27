@@ -1,3 +1,6 @@
+/**
+ * Created by macdja38 on 2016-09-18.
+ */
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18,9 +21,6 @@ var path = _interopRequireWildcard(_path);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * Created by macdja38 on 2016-09-18.
- */
 class ConfigJSON {
   /**
    * Instantiates a config object.
@@ -60,12 +60,22 @@ class ConfigJSON {
    * @returns {*}
    */
   get(key, { fallBack, failThrow }) {
-    if (this._data.hasOwnProperty(key)) {
-      return this._data[key];
-    } else if (failThrow) {
-      throw new Error(`Error Property ${ key } does not exist on ${ this._fileName }`);
+    if (failThrow) failThrow = `Error Property ${ key } does not exist on ${ this._fileName }`;
+    let keys = key.split(".");
+    return this._recursiveGet(keys, this._data, { fallBack, failThrow });
+  }
+
+  _recursiveGet(keys, data, { fallback, failThrow }) {
+    if (keys.length === 0) {
+      return data;
     }
-    return fallBack;
+    let key = keys.shift();
+    if (typeof data === "object" && data.hasOwnProperty(key)) {
+      return this._recursiveGet(keys, data[key], { fallback, failThrow });
+    } else {
+      if (fallback) return fallback;
+      if (failThrow) throw failThrow;
+    }
   }
 }
 exports.default = ConfigJSON;

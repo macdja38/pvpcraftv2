@@ -2,6 +2,8 @@
  * Created by macdja38 on 2016-08-08.
  */
 "use strict";
+import "babel-core/register";
+import "source-map-support/register";
 
 import Command from "../Types/userCommand";
 import { clean } from "../utils/utils.js"

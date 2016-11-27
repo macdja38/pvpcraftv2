@@ -37,6 +37,9 @@
     "discordie": "github:qeled/discordie#dev",
     "eris": "abalabahaha/eris#dev",
     "request": "^2.78.0",
-    "source-map-support": "^0.4.2"
+    "rethinkdbdash": "^2.3.27",
+    "source-map-support": "^0.4.2",
+    "youtube-dl": "^1.11.1",
+    "ytdl-core": "^0.7.19"
   }
 }

@@ -8,6 +8,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+require("babel-core/register");
+
+require("source-map-support/register");
+
 var _Adapter = require("./Adapter");
 
 var _Adapter2 = _interopRequireDefault(_Adapter);

@@ -7,6 +7,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+require("babel-core/register");
+
+require("source-map-support/register");
+
 class User {
   constructor(user) {
     this._user = user;

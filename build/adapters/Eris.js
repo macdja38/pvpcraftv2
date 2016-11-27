@@ -1,8 +1,16 @@
+/**
+ * Created by macdja38 on 2016-09-18.
+ */
+
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+require("babel-core/register");
+
+require("source-map-support/register");
 
 var _Adapter = require("./Adapter");
 
@@ -26,9 +34,7 @@ var _User2 = _interopRequireDefault(_User);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Created by macdja38 on 2016-09-18.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 class ErisAdapter extends _Adapter2.default {
   constructor({ configJSON, adapterSettings }) {
@@ -38,10 +44,27 @@ class ErisAdapter extends _Adapter2.default {
     this._configJSON = configJSON;
     this._adapterSettings = adapterSettings;
     this._client = new _eris2.default(this._adapterSettings.auth.token);
+    this._ready = this.startReady();
   }
 
   static get name() {
     return "eris";
+  }
+
+  startReady() {
+    return new Promise((resolve, reject) => {
+      this._client.on("ready", () => {
+        resolve(true);
+      });
+    });
+  }
+
+  get ready() {
+    return this._ready;
+  }
+
+  get serverIds() {
+    return this._client.guilds.map(g => g.id);
   }
 
   login() {
@@ -71,6 +94,14 @@ class ErisAdapter extends _Adapter2.default {
       this._commandHandler.onMessage(new ErisMessage(message, this._client));
       console.log(`eris ${ this._client.user.username } ${ message.author.username } ${ message.content }`);
     });
+  }
+
+  joinVoiceChannel(channelId) {
+    return this._client.joinVoiceChannel(channelId);
+  }
+
+  getGuild(id) {
+    return new ErisGuild(this._client.guilds.get(id));
   }
 }
 

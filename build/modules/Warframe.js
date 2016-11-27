@@ -5,13 +5,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Warframe = undefined;
 
+require("babel-core/register");
+
+require("source-map-support/register");
+
 var _Module = require("./Module");
 
 var _Module2 = _interopRequireDefault(_Module);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-let requirements = "configDB";
+let requirements = ["configDB"];
 
 class Warframe extends _Module2.default {
   constructor() {

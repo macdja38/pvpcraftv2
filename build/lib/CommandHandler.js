@@ -7,6 +7,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+require("babel-core/register");
+
+require("source-map-support/register");
+
 var _CommandParser = require("./CommandParser");
 
 var _CommandParser2 = _interopRequireDefault(_CommandParser);
@@ -35,6 +39,10 @@ class CommandHandler {
         c.exec(userCommand);
       }
     });
+  }
+
+  loadModules(modules) {
+    this.modules = modules;
   }
 
   loadAllCommands() {
