@@ -56,20 +56,17 @@ export class Music extends Module {
 
   async getCachingInfoHash(hashedLink, link) {
     let cachedInfo = await this.musicDB.getVid(hashedLink);
-    console.log("cachedInfo", cachedInfo);
-    if (cachedInfo) return cachedInfo;
+    console.log("resolving ", hashedLink);
+    if (cachedInfo && cachedInfo.hasOwnProperty("timeFetched") && typeof cachedInfo.timeFetched === "number" && Date.now() - cachedInfo.timeFetched < 4 * 60 * 60 * 1000) return cachedInfo;
     let info = await this.videoInfo.getVideoInfo(link);
-    console.log("fetchedInfo", info);
+    console.log("Cache outdated. Fetched new info");
     this.musicDB.saveVid(hashedLink, link, info);
     return info;
   }
 
   async cachingSearch(string) {
     let cache = await this.musicDB.getSearch(string);
-    if (cache) {
-      console.log("Cached", cache);
-      return cache;
-    }
+    if (cache) return cache;
     let response = await this.search(string);
     this.musicDB.saveSearch(string, response).catch(error => console.error);
     console.log(response);

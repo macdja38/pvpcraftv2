@@ -1,20 +1,29 @@
+/**
+ * Created by macdja38 on 2016-11-28.
+ */
+
 "use strict";
 import "babel-core/register";
 import "source-map-support/register";
 
 import Command from "../Command";
 
-let requirements = ["Warframe"];
+let requirements = ["Music"];
 
-export class Alerts extends Command {
+export class Play extends Command {
   constructor(...args) {
     super(...args, {
-      aliases: ['alert', 'alerts'],
-      module: ['warframe'],
+      aliases: ['play', 'alerts'],
+      module: 'music',
       nodes: ['warframe.alert'],
+      requiredModules: ['music'],
       description: "Display the current warframe alerts.",
       usage: []
     });
+  }
+
+  async exec(command) {
+
   }
 
   init() {
@@ -22,4 +31,4 @@ export class Alerts extends Command {
   }
 }
 
-export default Alerts;
+export default Play;

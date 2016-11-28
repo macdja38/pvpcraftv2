@@ -18,11 +18,11 @@ import Command from "../Command";
 
 let requirements = ["Warframe"];
 
-export class Alerts extends Command {
+export class Hat extends Command {
   constructor(...args) {
     super(...args, {
       aliases: ["hat"],
-      module: "warframe",
+      module: ["hat"],
       nodes: ["warframe.alert"],
       description: "Display the current warframe alerts.",
       usage: []
@@ -71,7 +71,7 @@ export class Alerts extends Command {
   }
 }
 
-export default Alerts;
+export default Hat;
 
 function getImageFromFile(path) {
   return new Promise((resolve, reject) => {

@@ -19,7 +19,7 @@ let ytdl = require('ytdl-core');
 
 // formats in order of preference when streaming them
 // starting numbers are itag values for youtube https://en.wikipedia.org/wiki/YouTube#Quality_and_formats
-let idealFormatIds = ["249", "250", "251", "171", "140", "141", "127", "128", "82", "83", "100", "84", "85", "5", "18", "43", "22", "36", "17", "http_mp3_128_url"];
+let idealFormatIds = ["127", "128", "91", "92", "93", "94", "95", "96", "249", "250", "251", "171", "140", "141", "82", "83", "100", "84", "85", "5", "18", "43", "22", "36", "17", "http_mp3_128_url"];
 
 function getVideoInfo(link) {
   if (link.indexOf("youtu") > -1) {

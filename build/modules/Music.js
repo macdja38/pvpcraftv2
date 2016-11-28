@@ -58,9 +58,6 @@ class Music extends _Module2.default {
             let text = guild.getChannel(queue.text_id);
             if (!text || !voice) return;
             let player = new _this.MusicPlayer(a, guild, text, voice, queue.queue, _this.musicDB, _this);
-            // player.init(voice.id);
-            //this.cachingSearch("rock and roll");
-            _this.getCachingInfoLink("https://www.youtube.com/watch?v=yprjgWwGd1w");
             _this.players.push(player);
           });
         });
@@ -90,10 +87,10 @@ class Music extends _Module2.default {
 
     return _asyncToGenerator(function* () {
       let cachedInfo = yield _this3.musicDB.getVid(hashedLink);
-      console.log("cachedInfo", cachedInfo);
-      if (cachedInfo) return cachedInfo;
+      console.log("resolving ", hashedLink);
+      if (cachedInfo && cachedInfo.hasOwnProperty("timeFetched") && typeof cachedInfo.timeFetched === "number" && Date.now() - cachedInfo.timeFetched < 4 * 60 * 60 * 1000) return cachedInfo;
       let info = yield _this3.videoInfo.getVideoInfo(link);
-      console.log("fetchedInfo", info);
+      console.log("Cache outdated. Fetched new info");
       _this3.musicDB.saveVid(hashedLink, link, info);
       return info;
     })();
@@ -104,10 +101,7 @@ class Music extends _Module2.default {
 
     return _asyncToGenerator(function* () {
       let cache = yield _this4.musicDB.getSearch(string);
-      if (cache) {
-        console.log("Cached", cache);
-        return cache;
-      }
+      if (cache) return cache;
       let response = yield _this4.search(string);
       _this4.musicDB.saveSearch(string, response).catch(function (error) {
         return console.error;

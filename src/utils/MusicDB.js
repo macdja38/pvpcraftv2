@@ -24,10 +24,24 @@ export class musicDB extends BaseDB {
     return this.r.table(this.table).getAll(...args);
   }
 
+  saveQueue(info, queue) {
+    let status = {
+      id: info.id,
+      guild_name: info.server.name,
+      text: info.text.name,
+      text_id: info.text.id,
+      voice: info.voice.name,
+      voice_id: info.voice.id,
+      queue: queue
+    };
+    return this.r.table(this.table).insert(status, {conflict: "replace"}).run();
+  }
+
   saveVid(linkHash, link, video) {
     video.id = linkHash;
     video.link = link;
-    return this.r.table(this.videoCache).insert(video).run();
+    video.timeFetched = Date.now();
+    return this.r.table(this.videoCache).insert(video, {conflict: "replace"}).run();
   }
 
   getVid(hash) {
@@ -35,7 +49,7 @@ export class musicDB extends BaseDB {
   }
 
   saveSearch(string, result) {
-    return this.r.table(this.searchCache).insert({id: string, result: result, timeFetched: Date.now()}).run();
+    return this.r.table(this.searchCache).insert({id: string, result: result, timeFetched: Date.now()}, {conflict: "replace"}).run();
   }
 
   getSearch(string) {
