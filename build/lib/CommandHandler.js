@@ -23,12 +23,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class CommandHandler {
   constructor() {
-    this._pingsRecieved = {};
-    this._pingsResponded = {};
-    this._pingsDelay = {};
-    this._pingsError = {};
     this._commands = [];
-    this.loadAllCommands();
   }
 
   onMessage(message) {
@@ -42,14 +37,22 @@ class CommandHandler {
   }
 
   loadModules(modules) {
-    this.modules = modules;
+    this._modules = {};
+    modules.forEach(m => this._modules[objectifyConstructorName(m.constructor.name)] = m);
   }
 
   loadAllCommands() {
+    if (!this._modules) throw "Modules not loaded yet! Please load modules before commands";
     this._commands = [];
     (0, _commands2.default)().forEach(c => c.forEach(c => this._commands.push(new c())));
+    this._commands.forEach(c => c.recieveModules(this._modules));
     this._commands.forEach(c => c.init());
   }
+
 }
+
 exports.default = CommandHandler;
+function objectifyConstructorName(name) {
+  return name.slice(0, 1).toLowerCase() + name.slice(1);
+}
 //# sourceMappingURL=CommandHandler.js.map

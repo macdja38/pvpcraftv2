@@ -12,7 +12,7 @@ const regArgs = /^((?:.|\n)*?)(?= -|$)/;
 const regFlagsAndOptions = /(?:(?:\s--)(\w+).(\n|.*?)(?= -|\n|$)|(?:\s-)([^-]*?)(?= -|\n|$))/g;
 
 export const getPrefix = function (content, prefixes, id) {
-  var m = content.trim();
+  let m = content.trim();
   for (let i in prefixes) {
     if (m.indexOf(prefixes[i].toLowerCase()) === 0) {
       m = m.substr(prefixes[i].length);
@@ -38,7 +38,7 @@ export const dissectMessage = function (content) {
   let command = args.shift();
   let flags = [];
   let options = [];
-  var myArray;
+  let myArray;
   while ((myArray = regFlagsAndOptions.exec(content)) !== null) {
     if (myArray[1] && myArray[2]) {
       options[myArray[1]] = myArray[2];

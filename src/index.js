@@ -59,15 +59,19 @@ for (let adapterSettings of adaptersJSON.get("adapters", {stringThrow: "adapters
   adaptersArray.push(new foundAdapter({ adapterSettings }));
 }
 
+let moduleLoader = new ModuleLoader(e);
+
 let commandHandler = new CommandHandler(adaptersArray);
+
+moduleLoader.loadAll();
+
+commandHandler.loadModules(moduleLoader.modules);
+
+commandHandler.loadAllCommands();
 
 for (let adapter of adaptersArray) {
   adapter.register(commandHandler);
 }
-
-let moduleLoader = new ModuleLoader(e);
-
-commandHandler.loadModules(moduleLoader.loadAll());
 
 for (let adapter of adaptersArray) {
   adapter.login();

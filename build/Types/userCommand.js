@@ -26,6 +26,10 @@ exports.default = class {
     this._prefix = prefix;
   }
 
+  get guild() {
+    return this._channel.guild;
+  }
+
   get command() {
     return this._command;
   }

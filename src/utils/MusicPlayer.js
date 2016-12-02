@@ -6,7 +6,7 @@ import "babel-core/register";
 import "source-map-support/register";
 
 export class MusicPlayer {
-  constructor(adapter, guild, text, voice, queue, musicDB, music) {
+  constructor(adapter, guild, text, voice, queue, currentSong, musicDB, music) {
     this._adapter = adapter;
     this._musicDB = musicDB;
     this.music = music;
@@ -18,9 +18,10 @@ export class MusicPlayer {
     this.fallbackQueue = "electro-hub";
     this.ready = false;
     this.connecting = false;
-    this.currentSong = false;
+    this.currentSong = currentSong;
     this.songStartTime = Date.now();
-    if (queue && queue.length > 0) {
+    if (queue && (queue.length > 0 || currentSong )) {
+      if (currentSong) this.queue.push(currentSong);
       this.init(voice.id).then(() => {
         this.play();
       })
@@ -36,6 +37,17 @@ export class MusicPlayer {
       voice: this.voice.name,
       voice_id: this.voice.id,
     }, this.queue)
+  }
+
+  saveCurrentSong() {
+    this._musicDB.saveCurrentSong({
+      id: this.guild.id,
+      guild_name: this.guild.name,
+      text: this.text.name,
+      text_id: this.text.id,
+      voice: this.voice.name,
+      voice_id: this.voice.id,
+    }, this.currentSong);
   }
 
   addListeners(connection, oldConnection) {
@@ -72,6 +84,7 @@ export class MusicPlayer {
     if (this.queue.length > 0) {
       this.play();
     }
+    this.saveQueue();
   }
 
   onWarn(...args) {
@@ -110,11 +123,12 @@ export class MusicPlayer {
         this.onEnd();
         return;
       }
+      this.currentSong = {link: this.queue[0], user_id: this.queue[0].user_id, startTime: Date.now()};
+      this.saveCurrentSong();
       console.log("Attempting to play " , url);
       console.log("Current connection status Ready:", this.connection.ready, " connecting:", this.connection.connecting);
       let result = await this.connection.play(url.url, {encoderArgs: ["-c", "copy"]});
       console.log("Play result ", result);
-      this.songStartTime = Date.now();
     }
   }
 

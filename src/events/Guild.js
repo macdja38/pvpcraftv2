@@ -11,6 +11,10 @@ export default class Guild {
     this._guild = guild;
   }
 
+  get id() {
+    return this._guild.id;
+  }
+
   getChannel(id) {
     return this._guild.channels.get(id);
   }

@@ -94,15 +94,19 @@ for (let adapterSettings of adaptersJSON.get("adapters", { stringThrow: "adapter
   adaptersArray.push(new foundAdapter({ adapterSettings }));
 }
 
+let moduleLoader = new _ModuleLoader2.default(e);
+
 let commandHandler = new _CommandHandler2.default(adaptersArray);
+
+moduleLoader.loadAll();
+
+commandHandler.loadModules(moduleLoader.modules);
+
+commandHandler.loadAllCommands();
 
 for (let adapter of adaptersArray) {
   adapter.register(commandHandler);
 }
-
-let moduleLoader = new _ModuleLoader2.default(e);
-
-commandHandler.loadModules(moduleLoader.loadAll());
 
 for (let adapter of adaptersArray) {
   adapter.login();

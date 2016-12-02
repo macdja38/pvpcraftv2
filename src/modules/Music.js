@@ -21,7 +21,7 @@ export class Music extends Module {
     this.MusicPlayer = MusicPlayer;
     this.musicDB = musicDB;
     this.videoInfo = videoInfo;
-    this.players = [];
+    this.players = new Map([]);
     this.regionCode = "CA";
     this.apiKey = authJSON.get("apiKeys.youtube", false);
     this.startConnections();
@@ -38,11 +38,20 @@ export class Music extends Module {
           let voice = guild.getChannel(queue.voice_id);
           let text = guild.getChannel(queue.text_id);
           if (!text || !voice) return;
-          let player = new this.MusicPlayer(a, guild, text, voice, queue.queue, this.musicDB, this);
-          this.players.push(player);
+          let player = new this.MusicPlayer(a, guild, text, voice, queue.queue, queue.currentSong, this.musicDB, this);
+          this.players.set(guild.id, player);
         })
       })
     })
+  }
+
+  play(guild, link, user) {
+    let player = this.players.get(guild.id);
+    player.add(link, user);
+  }
+
+  init(guild) {
+
   }
 
   getStreamUrl(info) {

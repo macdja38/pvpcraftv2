@@ -15,7 +15,7 @@ require("source-map-support/register");
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 class MusicPlayer {
-  constructor(adapter, guild, text, voice, queue, musicDB, music) {
+  constructor(adapter, guild, text, voice, queue, currentSong, musicDB, music) {
     this._adapter = adapter;
     this._musicDB = musicDB;
     this.music = music;
@@ -27,9 +27,10 @@ class MusicPlayer {
     this.fallbackQueue = "electro-hub";
     this.ready = false;
     this.connecting = false;
-    this.currentSong = false;
+    this.currentSong = currentSong;
     this.songStartTime = Date.now();
-    if (queue && queue.length > 0) {
+    if (queue && (queue.length > 0 || currentSong)) {
+      if (currentSong) this.queue.push(currentSong);
       this.init(voice.id).then(() => {
         this.play();
       });
@@ -45,6 +46,17 @@ class MusicPlayer {
       voice: this.voice.name,
       voice_id: this.voice.id
     }, this.queue);
+  }
+
+  saveCurrentSong() {
+    this._musicDB.saveCurrentSong({
+      id: this.guild.id,
+      guild_name: this.guild.name,
+      text: this.text.name,
+      text_id: this.text.id,
+      voice: this.voice.name,
+      voice_id: this.voice.id
+    }, this.currentSong);
   }
 
   addListeners(connection, oldConnection) {
@@ -79,7 +91,7 @@ class MusicPlayer {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      console.error(...args);
+      console.error("End", ...args);
       let lastVideo = _this2.queue.shift();
       if (_this2.repeat) _this2.queue.push(lastVideo);else if (_this2.fallbackQueue) {
         yield _this2.queueRandomPlaylist(_this2.fallbackQueue);
@@ -87,6 +99,7 @@ class MusicPlayer {
       if (_this2.queue.length > 0) {
         _this2.play();
       }
+      _this2.saveQueue();
     })();
   }
 
@@ -133,11 +146,12 @@ class MusicPlayer {
           _this4.onEnd();
           return;
         }
+        _this4.currentSong = { link: _this4.queue[0], user_id: _this4.queue[0].user_id, startTime: Date.now() };
+        _this4.saveCurrentSong();
         console.log("Attempting to play ", url);
         console.log("Current connection status Ready:", _this4.connection.ready, " connecting:", _this4.connection.connecting);
         let result = yield _this4.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
         console.log("Play result ", result);
-        _this4.songStartTime = Date.now();
       }
     })();
   }

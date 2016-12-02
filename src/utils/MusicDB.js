@@ -29,14 +29,27 @@ export class musicDB extends BaseDB {
   saveQueue(info, queue) {
     let status = {
       id: info.id,
-      guild_name: info.server.name,
-      text: info.text.name,
-      text_id: info.text.id,
-      voice: info.voice.name,
-      voice_id: info.voice.id,
-      queue: queue
+      guild_name: info.guild_name,
+      text: info.text,
+      text_id: info.text_id,
+      voice: info.voice,
+      voice_id: info.voice_id,
+      queue
     };
-    return this.r.table(this.table).insert(status, {conflict: "replace"}).run();
+    return this.r.table(this.table).insert(status, {conflict: "update"}).run();
+  }
+
+  saveCurrentSong(info, currentSong) {
+    let status = {
+      id: info.id,
+      guild_name: info.guild_name,
+      text: info.text,
+      text_id: info.text_id,
+      voice: info.voice,
+      voice_id: info.voice_id,
+      currentSong
+    };
+    return this.r.table(this.table).insert(status, {conflict: "update"}).run();
   }
 
   saveVid(linkHash, link, video) {

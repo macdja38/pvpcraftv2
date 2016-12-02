@@ -39,7 +39,7 @@ class Music extends _Module2.default {
     this.MusicPlayer = MusicPlayer;
     this.musicDB = musicDB;
     this.videoInfo = videoInfo;
-    this.players = [];
+    this.players = new Map([]);
     this.regionCode = "CA";
     this.apiKey = authJSON.get("apiKeys.youtube", false);
     this.startConnections();
@@ -59,8 +59,8 @@ class Music extends _Module2.default {
             let voice = guild.getChannel(queue.voice_id);
             let text = guild.getChannel(queue.text_id);
             if (!text || !voice) return;
-            let player = new _this.MusicPlayer(a, guild, text, voice, queue.queue, _this.musicDB, _this);
-            _this.players.push(player);
+            let player = new _this.MusicPlayer(a, guild, text, voice, queue.queue, queue.currentSong, _this.musicDB, _this);
+            _this.players.set(guild.id, player);
           });
         });
       });
@@ -70,6 +70,13 @@ class Music extends _Module2.default {
       };
     })());
   }
+
+  play(guild, link, user) {
+    let player = this.players.get(guild.id);
+    player.add(link, user);
+  }
+
+  init(guild) {}
 
   getStreamUrl(info) {
     return this.videoInfo.getStreamUrl(info);

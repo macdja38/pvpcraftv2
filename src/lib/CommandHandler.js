@@ -10,12 +10,7 @@ import Commands from "../commands";
 
 export default class CommandHandler{
   constructor() {
-    this._pingsRecieved = {};
-    this._pingsResponded = {};
-    this._pingsDelay = {};
-    this._pingsError = {};
     this._commands = [];
-    this.loadAllCommands();
   }
 
   onMessage(message) {
@@ -29,12 +24,20 @@ export default class CommandHandler{
   }
 
   loadModules(modules) {
-    this.modules = modules;
+    this._modules = {};
+    modules.forEach(m => this._modules[objectifyConstructorName(m.constructor.name)] = m);
   }
 
   loadAllCommands() {
+    if (!this._modules) throw "Modules not loaded yet! Please load modules before commands";
     this._commands = [];
     Commands().forEach(c => c.forEach(c => this._commands.push(new c())));
+    this._commands.forEach(c => c.recieveModules(this._modules));
     this._commands.forEach(c => c.init());
   }
+
+}
+
+function objectifyConstructorName(name) {
+  return name.slice(0, 1).toLowerCase() + name.slice(1);
 }

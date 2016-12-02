@@ -13,7 +13,7 @@ let requirements = ["Music"];
 export class Play extends Command {
   constructor(...args) {
     super(...args, {
-      aliases: ['play', 'alerts'],
+      aliases: ['play'],
       module: 'music',
       nodes: ['warframe.alert'],
       requiredModules: ['music'],
@@ -23,7 +23,7 @@ export class Play extends Command {
   }
 
   async exec(command) {
-
+    this.modules.music.play(command.guild, command.args[0], command.user);
   }
 
   init() {
