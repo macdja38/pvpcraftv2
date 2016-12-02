@@ -16,6 +16,11 @@ class Command {
   constructor(...args) {
     let options = args.pop();
     this.aliases = options.aliases;
+    this.modules = {};
+  }
+
+  recieveModules(modules) {
+    this.modules = modules;
   }
 }
 

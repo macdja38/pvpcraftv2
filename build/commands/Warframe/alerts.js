@@ -21,7 +21,7 @@ class Alerts extends _Command2.default {
   constructor(...args) {
     super(...args, {
       aliases: ['alert', 'alerts'],
-      module: 'warframe',
+      module: ['warframe'],
       nodes: ['warframe.alert'],
       description: "Display the current warframe alerts.",
       usage: []

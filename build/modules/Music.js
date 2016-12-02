@@ -20,13 +20,15 @@ var _Module = require("./Module");
 
 var _Module2 = _interopRequireDefault(_Module);
 
+var _request = require("request");
+
+var _request2 = _interopRequireDefault(_request);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 let requirements = ["configDB", "musicDB", "configJSON", "musicPlayer"];
-
-let request = require("request");
 
 let table = "music";
 
@@ -114,10 +116,52 @@ class Music extends _Module2.default {
   search(string) {
     return new Promise((resolve, reject) => {
       let requestUrl = "https://www.googleapis.com/youtube/v3/search" + `?part=snippet&q=${ string }&key=${ this.apiKey }&regionCode=${ this.regionCode }`;
-      request({ method: "GET", uri: requestUrl, gzip: true }, (error, response) => {
+      (0, _request2.default)({ method: "GET", uri: requestUrl, gzip: true }, (error, response) => {
         if (error) reject(error);
         resolve(JSON.parse(response.body));
       });
+    });
+  }
+
+  getCachedDiscordFMPlaylist(id) {
+    var _this5 = this;
+
+    return _asyncToGenerator(function* () {
+      let cache = yield _this5.musicDB.getDiscordFMPlaylist(id);
+      if (cache) return cache;
+      let response = yield _this5.getDiscordFMPlaylist(id);
+      _this5.musicDB.saveDiscordFMPlaylist(id, response);
+      console.log(response);
+      return response;
+    })();
+  }
+
+  getDiscordFMPlaylist(id) {
+    var _this6 = this;
+
+    return _asyncToGenerator(function* () {
+      return new Promise(function (resolve, reject) {
+        let requestUrl = `https://temp.discord.fm/libraries/${ id }/json`;
+        (0, _request2.default)({ method: "GET", uri: requestUrl, gzip: true }, function (error, response) {
+          if (error) reject(error);
+          resolve(_this6.normalizeDiscordFMPlaylist(JSON.parse(response.body)));
+        });
+      });
+    })();
+  }
+
+  normalizeDiscordFMPlaylist(items) {
+    return items.map(item => {
+      let normalised = {};
+      if (item.hasOwnProperty("requestee")) {
+        normalised.reqeustee = item.requestee;
+      }
+      if (item.service === "YouTubeVideo") {
+        normalised.url = `https://www.youtube.com/watch?v=${ item.identifier }`;
+      } else if (item.service === "SoundCloudTrack") {
+        normalised.url = item.url;
+      }
+      return normalised;
     });
   }
 }

@@ -6,7 +6,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Alerts = undefined;
+exports.Hat = undefined;
 
 require("babel-core/register");
 
@@ -31,11 +31,11 @@ var Canvas = require('canvas'),
 
 let requirements = ["Warframe"];
 
-class Alerts extends _Command2.default {
+class Hat extends _Command2.default {
   constructor(...args) {
     super(...args, {
       aliases: ["hat"],
-      module: "warframe",
+      module: ["hat"],
       nodes: ["warframe.alert"],
       description: "Display the current warframe alerts.",
       usage: []
@@ -87,8 +87,8 @@ class Alerts extends _Command2.default {
   }
 }
 
-exports.Alerts = Alerts;
-exports.default = Alerts;
+exports.Hat = Hat;
+exports.default = Hat;
 
 
 function getImageFromFile(path) {

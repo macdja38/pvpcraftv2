@@ -26,9 +26,11 @@ class musicDB extends _BaseDB2.default {
     this.table = "queue";
     this.searchCache = "searchCache";
     this.videoCache = "videoCache";
+    this.discordFMCache = "discordFMCache";
     this.ensureTable("queue", {});
     this.ensureTable(this.searchCache);
     this.ensureTable(this.videoCache);
+    this.ensureTable(this.discordFMCache);
   }
 
   getAll(...args) {
@@ -65,6 +67,14 @@ class musicDB extends _BaseDB2.default {
 
   getSearch(string) {
     return this.r.table(this.searchCache).get(string).run();
+  }
+
+  saveDiscordFMPlaylist(id, playlist) {
+    return this.r.table(this.discordFMCache).insert({ id, playlist }, { conflict: "replace" }).run();
+  }
+
+  getDiscordFMPlaylist(id) {
+    return this.r.table(this.discordFMCache).get(id).run();
   }
 }
 

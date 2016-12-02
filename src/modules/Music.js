@@ -10,7 +10,7 @@ import Module from "./Module";
 
 let requirements = ["configDB", "musicDB", "configJSON", "musicPlayer"];
 
-let request = require("request");
+import request from "request";
 
 let table = "music";
 
@@ -81,6 +81,40 @@ export class Music extends Module {
         if (error) reject(error);
         resolve(JSON.parse(response.body));
       })
+    })
+  }
+
+  async getCachedDiscordFMPlaylist(id) {
+    let cache = await this.musicDB.getDiscordFMPlaylist(id);
+    if (cache) return cache;
+    let response = await this.getDiscordFMPlaylist(id);
+    this.musicDB.saveDiscordFMPlaylist(id, response);
+    console.log(response);
+    return response;
+  }
+
+  async getDiscordFMPlaylist(id) {
+    return new Promise((resolve, reject) => {
+      let requestUrl = `https://temp.discord.fm/libraries/${id}/json`;
+      request({method: "GET", uri: requestUrl, gzip: true}, (error, response) => {
+        if (error) reject(error);
+        resolve(this.normalizeDiscordFMPlaylist(JSON.parse(response.body)));
+      })
+    })
+  }
+
+  normalizeDiscordFMPlaylist(items) {
+    return items.map(item => {
+      let normalised = {};
+      if (item.hasOwnProperty("requestee")) {
+        normalised.reqeustee = item.requestee;
+      }
+      if (item.service === "YouTubeVideo") {
+        normalised.url = `https://www.youtube.com/watch?v=${item.identifier}`;
+      } else if (item.service === "SoundCloudTrack") {
+        normalised.url = item.url;
+      }
+      return normalised;
     })
   }
 }

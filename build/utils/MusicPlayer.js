@@ -24,6 +24,11 @@ class MusicPlayer {
     this.voice = voice;
     this.queue = queue;
     this.repeat = false;
+    this.fallbackQueue = "electro-hub";
+    this.ready = false;
+    this.connecting = false;
+    this.currentSong = false;
+    this.songStartTime = Date.now();
     if (queue && queue.length > 0) {
       this.init(voice.id).then(() => {
         this.play();
@@ -49,21 +54,40 @@ class MusicPlayer {
     connection.on("end", this.onEnd.bind(this));
     connection.on("warn", this.onWarn.bind(this));
     connection.on("debug", this.onDebug.bind(this));
+    connection.on("disconnect", this.onDisconnect.bind(this));
   }
 
   removeListeners(oldConnection) {
     oldConnection.removeListener("end", this.onEnd);
     oldConnection.removeListener("warn", this.onWarn);
     oldConnection.removeListener("debug", this.onDebug());
+    oldConnection.removeListener("disconnect", this.onDisconnect());
+  }
+
+  queueRandomPlaylist(id) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      let playlist = yield _this.music.getCachedDiscordFMPlaylist(id);
+      console.log("playlist", playlist);
+      let newSong = playlist.playlist[Math.floor(Math.random() * playlist.playlist.length)];
+      _this.queue.push({ link: newSong.url, user: "103607047383166976" });
+    })();
   }
 
   onEnd(...args) {
-    console.error(...args);
-    let lastVideo = this.queue.shift();
-    if (this.repeat) this.queue.push(lastVideo);
-    if (this.queue.length > 0) {
-      this.play();
-    }
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      console.error(...args);
+      let lastVideo = _this2.queue.shift();
+      if (_this2.repeat) _this2.queue.push(lastVideo);else if (_this2.fallbackQueue) {
+        yield _this2.queueRandomPlaylist(_this2.fallbackQueue);
+      }
+      if (_this2.queue.length > 0) {
+        _this2.play();
+      }
+    })();
   }
 
   onWarn(...args) {
@@ -74,32 +98,46 @@ class MusicPlayer {
     console.error("Debug", ...args);
   }
 
+  onDisconnect(...args) {
+    console.error("Disconnected", ...args);
+    this.connection.disconnect(null, true);
+  }
+
   init(channel) {
-    var _this = this;
+    var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      return _this._adapter.joinVoiceChannel(channel).then(function (connection) {
-        let oldConnection = _this.connection;
-        _this.connection = connection;
-        _this.addListeners(connection, oldConnection);
+      return _this3._adapter.joinVoiceChannel(channel).then(function (connection) {
+        let oldConnection = _this3.connection;
+        _this3.connection = connection;
+        _this3.addListeners(connection, oldConnection);
       });
     })();
   }
 
-  add(video) {
-    this.queue.push(video);
+  add(link, user) {
+    this.queue.push({ link, user_id: user.id, user_name: user.name });
     this.saveQueue();
   }
 
   play() {
-    var _this2 = this;
+    var _this4 = this;
 
     return _asyncToGenerator(function* () {
-      if (_this2.queue.length > 0) {
-        console.log("queue", _this2.queue);
-        let url = _this2.music.getStreamUrl((yield _this2.music.getCachingInfoLink(_this2.queue[0].link)));
-        console.log(url);
-        _this2.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
+      if (_this4.queue.length > 0) {
+        console.log("queue", _this4.queue);
+        let url;
+        try {
+          url = _this4.music.getStreamUrl((yield _this4.music.getCachingInfoLink(_this4.queue[0].link)));
+        } catch (error) {
+          _this4.onEnd();
+          return;
+        }
+        console.log("Attempting to play ", url);
+        console.log("Current connection status Ready:", _this4.connection.ready, " connecting:", _this4.connection.connecting);
+        let result = yield _this4.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
+        console.log("Play result ", result);
+        _this4.songStartTime = Date.now();
       }
     })();
   }
