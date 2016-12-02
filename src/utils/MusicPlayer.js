@@ -98,14 +98,26 @@ export class MusicPlayer {
   onDisconnect(...args) {
     console.error("Disconnected", ...args);
     this.connection.disconnect(null, true);
+    this.init(this.voice);
   }
 
-  async init(channel) {
+  _init(channel) {
     return this._adapter.joinVoiceChannel(channel).then(connection => {
       let oldConnection = this.connection;
+      if (oldConnection) {
+        this.removeListeners(oldConnection);
+      }
       this.connection = connection;
       this.addListeners(connection, oldConnection);
     });
+  }
+
+  async init(channel) {
+    let initReady = this._init(channel);
+    this.ready = initReady;
+    await this.ready;
+    this.ready = true;
+    return initReady;
   }
 
   add(link, user) {
@@ -114,6 +126,12 @@ export class MusicPlayer {
   }
 
   async play() {
+    if (this.ready === false) this.init(this.voice);
+    try {
+      if (this.ready.then) await this.ready;
+    } catch (error) {
+      return;
+    }
     if (this.queue.length > 0) {
       console.log("queue", this.queue);
       let url;
@@ -125,7 +143,7 @@ export class MusicPlayer {
       }
       this.currentSong = {link: this.queue[0], user_id: this.queue[0].user_id, startTime: Date.now()};
       this.saveCurrentSong();
-      console.log("Attempting to play " , url);
+      console.log("Attempting to play ", url);
       console.log("Current connection status Ready:", this.connection.ready, " connecting:", this.connection.connecting);
       let result = await this.connection.play(url.url, {encoderArgs: ["-c", "copy"]});
       console.log("Play result ", result);

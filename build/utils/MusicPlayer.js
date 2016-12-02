@@ -114,17 +114,29 @@ class MusicPlayer {
   onDisconnect(...args) {
     console.error("Disconnected", ...args);
     this.connection.disconnect(null, true);
+    this.init(this.voice);
+  }
+
+  _init(channel) {
+    return this._adapter.joinVoiceChannel(channel).then(connection => {
+      let oldConnection = this.connection;
+      if (oldConnection) {
+        this.removeListeners(oldConnection);
+      }
+      this.connection = connection;
+      this.addListeners(connection, oldConnection);
+    });
   }
 
   init(channel) {
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      return _this3._adapter.joinVoiceChannel(channel).then(function (connection) {
-        let oldConnection = _this3.connection;
-        _this3.connection = connection;
-        _this3.addListeners(connection, oldConnection);
-      });
+      let initReady = _this3._init(channel);
+      _this3.ready = initReady;
+      yield _this3.ready;
+      _this3.ready = true;
+      return initReady;
     })();
   }
 
@@ -137,6 +149,12 @@ class MusicPlayer {
     var _this4 = this;
 
     return _asyncToGenerator(function* () {
+      if (_this4.ready === false) _this4.init(_this4.voice);
+      try {
+        if (_this4.ready.then) yield _this4.ready;
+      } catch (error) {
+        return;
+      }
       if (_this4.queue.length > 0) {
         console.log("queue", _this4.queue);
         let url;
