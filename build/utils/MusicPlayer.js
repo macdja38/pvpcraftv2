@@ -31,7 +31,7 @@ class MusicPlayer {
     this.songStartTime = Date.now();
     if (queue && (queue.length > 0 || currentSong)) {
       if (currentSong) this.queue.push(currentSong);
-      this.init(voice.id).then(() => {
+      this.init(voice).then(() => {
         this.play();
       });
     }
@@ -64,6 +64,7 @@ class MusicPlayer {
       this.removeListeners(oldConnection);
     }
     connection.on("end", this.onEnd.bind(this));
+    connection.on("error", this.onError.bind(this));
     connection.on("warn", this.onWarn.bind(this));
     connection.on("debug", this.onDebug.bind(this));
     connection.on("disconnect", this.onDisconnect.bind(this));
@@ -71,9 +72,10 @@ class MusicPlayer {
 
   removeListeners(oldConnection) {
     oldConnection.removeListener("end", this.onEnd);
+    oldConnection.removeListener("error", this.onError);
     oldConnection.removeListener("warn", this.onWarn);
-    oldConnection.removeListener("debug", this.onDebug());
-    oldConnection.removeListener("disconnect", this.onDisconnect());
+    oldConnection.removeListener("debug", this.onDebug);
+    oldConnection.removeListener("disconnect", this.onDisconnect);
   }
 
   queueRandomPlaylist(id) {
@@ -81,7 +83,6 @@ class MusicPlayer {
 
     return _asyncToGenerator(function* () {
       let playlist = yield _this.music.getCachedDiscordFMPlaylist(id);
-      console.log("playlist", playlist);
       let newSong = playlist.playlist[Math.floor(Math.random() * playlist.playlist.length)];
       _this.queue.push({ link: newSong.url, user: "103607047383166976" });
     })();
@@ -93,7 +94,7 @@ class MusicPlayer {
     return _asyncToGenerator(function* () {
       console.error("End", ...args);
       let lastVideo = _this2.queue.shift();
-      if (_this2.repeat) _this2.queue.push(lastVideo);else if (_this2.fallbackQueue) {
+      if (_this2.repeat) _this2.queue.push(lastVideo);else if (_this2.fallbackQueue && _this2.queue.length < 1) {
         yield _this2.queueRandomPlaylist(_this2.fallbackQueue);
       }
       if (_this2.queue.length > 0) {
@@ -107,8 +108,14 @@ class MusicPlayer {
     console.error("Warn", ...args);
   }
 
-  onDebug(...args) {
-    console.error("Debug", ...args);
+  onDebug(debug) {
+    if (!/"op":(?:3|5)/.test(debug)) {
+      console.error("Debug", debug);
+    }
+  }
+
+  onError(...args) {
+    console.error("Error", ...args);
   }
 
   onDisconnect(...args) {
@@ -118,7 +125,7 @@ class MusicPlayer {
   }
 
   _init(channel) {
-    return this._adapter.joinVoiceChannel(channel).then(connection => {
+    return this._adapter.joinVoiceChannel(channel.id).then(connection => {
       let oldConnection = this.connection;
       if (oldConnection) {
         this.removeListeners(oldConnection);

@@ -138,7 +138,6 @@ class Music extends _Module2.default {
       if (cache) return cache;
       let response = yield _this5.getDiscordFMPlaylist(id);
       _this5.musicDB.saveDiscordFMPlaylist(id, response);
-      console.log(response);
       return response;
     })();
   }

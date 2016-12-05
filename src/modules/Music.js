@@ -98,7 +98,6 @@ export class Music extends Module {
     if (cache) return cache;
     let response = await this.getDiscordFMPlaylist(id);
     this.musicDB.saveDiscordFMPlaylist(id, response);
-    console.log(response);
     return response;
   }
 

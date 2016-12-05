@@ -22,7 +22,7 @@ export class MusicPlayer {
     this.songStartTime = Date.now();
     if (queue && (queue.length > 0 || currentSong )) {
       if (currentSong) this.queue.push(currentSong);
-      this.init(voice.id).then(() => {
+      this.init(voice).then(() => {
         this.play();
       })
     }
@@ -55,6 +55,7 @@ export class MusicPlayer {
       this.removeListeners(oldConnection);
     }
     connection.on("end", this.onEnd.bind(this));
+    connection.on("error", this.onError.bind(this));
     connection.on("warn", this.onWarn.bind(this));
     connection.on("debug", this.onDebug.bind(this));
     connection.on("disconnect", this.onDisconnect.bind(this));
@@ -62,14 +63,14 @@ export class MusicPlayer {
 
   removeListeners(oldConnection) {
     oldConnection.removeListener("end", this.onEnd);
+    oldConnection.removeListener("error", this.onError);
     oldConnection.removeListener("warn", this.onWarn);
-    oldConnection.removeListener("debug", this.onDebug());
-    oldConnection.removeListener("disconnect", this.onDisconnect());
+    oldConnection.removeListener("debug", this.onDebug);
+    oldConnection.removeListener("disconnect", this.onDisconnect);
   }
 
   async queueRandomPlaylist(id) {
     let playlist = await this.music.getCachedDiscordFMPlaylist(id);
-    console.log("playlist", playlist);
     let newSong = playlist.playlist[Math.floor(Math.random() * playlist.playlist.length)];
     this.queue.push({link: newSong.url, user: "103607047383166976"});
   }
@@ -78,7 +79,7 @@ export class MusicPlayer {
     console.error("End", ...args);
     let lastVideo = this.queue.shift();
     if (this.repeat) this.queue.push(lastVideo);
-    else if (this.fallbackQueue) {
+    else if (this.fallbackQueue && this.queue.length < 1) {
       await this.queueRandomPlaylist(this.fallbackQueue);
     }
     if (this.queue.length > 0) {
@@ -91,8 +92,14 @@ export class MusicPlayer {
     console.error("Warn", ...args);
   }
 
-  onDebug(...args) {
-    console.error("Debug", ...args);
+  onDebug(debug) {
+    if (!/"op":(?:3|5)/.test(debug)) {
+      console.error("Debug", debug);
+    }
+  }
+
+  onError(...args) {
+    console.error("Error", ...args);
   }
 
   onDisconnect(...args) {
@@ -102,7 +109,7 @@ export class MusicPlayer {
   }
 
   _init(channel) {
-    return this._adapter.joinVoiceChannel(channel).then(connection => {
+    return this._adapter.joinVoiceChannel(channel.id).then(connection => {
       let oldConnection = this.connection;
       if (oldConnection) {
         this.removeListeners(oldConnection);
