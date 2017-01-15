@@ -27,7 +27,7 @@ class CommandHandler {
   }
 
   onMessage(message) {
-    let userCommand = (0, _CommandParser2.default)({ message, channel: message.channel, prefixes: ["!!", "*"], id: message.client.user.id });
+    let userCommand = (0, _CommandParser2.default)({ message, channel: message.channel, prefixes: ["*"], id: message.clientUser.id });
     userCommand.setLanguage("en");
     this._commands.forEach(c => {
       if (c.aliases.indexOf(userCommand.command) > -1) {

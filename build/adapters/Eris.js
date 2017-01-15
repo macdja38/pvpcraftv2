@@ -108,8 +108,7 @@ class ErisAdapter extends _Adapter2.default {
 exports.default = ErisAdapter;
 class ErisMessage extends _Message2.default {
   constructor(message, client) {
-    super(message);
-    this._client = client;
+    super(message, client);
   }
 
   get adapter() {
@@ -126,10 +125,6 @@ class ErisMessage extends _Message2.default {
 
   get author() {
     return new ErisUser(this._message.author);
-  }
-
-  get client() {
-    return this._client;
   }
 
   get channel() {

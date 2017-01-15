@@ -50,10 +50,13 @@ class Music extends _Module2.default {
 
     this.adapters.forEach((() => {
       var _ref = _asyncToGenerator(function* (a) {
+        console.log("awaiting adapter");
         yield a.ready;
+        console.log("adapter ready", a.serverIds);
         _this.musicDB.getAll(...a.serverIds).then(function (queues) {
+          console.log("queues", queues);
           queues.forEach(function (queue) {
-            console.log(queue);
+            console.log("queue instance", queue);
             let guild = a.getGuild(queue.id);
             if (!guild) return;
             let voice = guild.getChannel(queue.voice_id);

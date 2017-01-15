@@ -76,7 +76,7 @@ export class MusicPlayer {
   }
 
   async onEnd(...args) {
-    console.error("End", ...args);
+    console.error(new Date().toString(), "End", ...args);
     let lastVideo = this.queue.shift();
     if (this.repeat) this.queue.push(lastVideo);
     else if (this.fallbackQueue && this.queue.length < 1) {
@@ -89,26 +89,27 @@ export class MusicPlayer {
   }
 
   onWarn(...args) {
-    console.error("Warn", ...args);
+    console.error(new Date().toString(), "Warn:", ...args);
   }
 
   onDebug(debug) {
     if (!/"op":(?:3|5)/.test(debug)) {
-      console.error("Debug", debug);
+      console.error(new Date().toString(), "Debug:", debug);
     }
   }
 
   onError(...args) {
-    console.error("Error", ...args);
+    console.error(new Date().toString(), "Error:", ...args);
   }
 
   onDisconnect(...args) {
-    console.error("Disconnected", ...args);
-    this.connection.disconnect(null, true);
-    this.init(this.voice);
+    console.error(new Date().toString(), "Disconnected:", ...args);
+    //this.connection.disconnect(null, true);
+    //this.init(this.voice);
   }
 
   _init(channel) {
+    console.log(new Date().toString(), "Calling joinVoiceChannel");
     return this._adapter.joinVoiceChannel(channel.id).then(connection => {
       let oldConnection = this.connection;
       if (oldConnection) {
@@ -119,12 +120,16 @@ export class MusicPlayer {
     });
   }
 
-  async init(channel) {
-    let initReady = this._init(channel);
-    this.ready = initReady;
-    await this.ready;
-    this.ready = true;
-    return initReady;
+  init(channel) {
+    let initReady;
+    if (!this.ready.hasOwnProperty("then")) {
+      initReady = this._init(channel);
+      this.ready = initReady;
+    }
+    return this.ready.then(() => {
+      this.ready = true;
+      return initReady;
+    });
   }
 
   add(link, user) {
@@ -133,27 +138,35 @@ export class MusicPlayer {
   }
 
   async play() {
-    if (this.ready === false) this.init(this.voice);
+    if ((this.ready === false || this.connection.ready === false) && !this.ready.hasOwnProperty("then")) this.init(this.voice);
     try {
-      if (this.ready.then) await this.ready;
+      if (this.ready.hasOwnProperty("then")) {
+        await this.ready;
+        console.log(new Date().toString(), "Awaited Ready");
+        console.log(new Date().toString(), "Awaited Ready status Ready:", this.connection.ready, " connecting:", this.connection.connecting, "channel", this.voice.name);
+      }
+      //return this.play();
     } catch (error) {
+      console.log(new Date().toString(), "l40", error);
       return;
     }
     if (this.queue.length > 0) {
-      console.log("queue", this.queue);
+      console.log(new Date().toString(), "queue", this.queue);
       let url;
+      let song = this.queue[0];
       try {
-        url = this.music.getStreamUrl(await this.music.getCachingInfoLink(this.queue[0].link));
+        url = this.music.getStreamUrl(await this.music.getCachingInfoLink(song.link));
       } catch (error) {
         this.onEnd();
         return;
       }
-      this.currentSong = {link: this.queue[0], user_id: this.queue[0].user_id, startTime: Date.now()};
+      this.currentSong = {link: song.link, user_id: song.user_id, startTime: Date.now()};
       this.saveCurrentSong();
-      console.log("Attempting to play ", url);
-      console.log("Current connection status Ready:", this.connection.ready, " connecting:", this.connection.connecting);
+      console.log(new Date().toString(), "Attempting to play ", url);
+      console.log(new Date().toString(), "Current connection status Ready:", this.connection.ready, " connecting:", this.connection.connecting, "channel", this.voice.name);
+      if (this.connection.playing) return this.connection.stopPlaying();
       let result = await this.connection.play(url.url, {encoderArgs: ["-c", "copy"]});
-      console.log("Play result ", result);
+      console.log(new Date().toString(), "Play result ", result);
     }
   }
 

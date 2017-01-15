@@ -29,10 +29,13 @@ export class Music extends Module {
 
   startConnections() {
     this.adapters.forEach(async a => {
+      console.log("awaiting adapter");
       await a.ready;
+      console.log("adapter ready", a.serverIds);
       this.musicDB.getAll(...a.serverIds).then(queues => {
+        console.log("queues", queues);
         queues.forEach(queue => {
-          console.log(queue);
+          console.log("queue instance", queue);
           let guild = a.getGuild(queue.id);
           if (!guild) return;
           let voice = guild.getChannel(queue.voice_id);

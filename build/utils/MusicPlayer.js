@@ -92,7 +92,7 @@ class MusicPlayer {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      console.error("End", ...args);
+      console.error(new Date().toString(), "End", ...args);
       let lastVideo = _this2.queue.shift();
       if (_this2.repeat) _this2.queue.push(lastVideo);else if (_this2.fallbackQueue && _this2.queue.length < 1) {
         yield _this2.queueRandomPlaylist(_this2.fallbackQueue);
@@ -105,26 +105,27 @@ class MusicPlayer {
   }
 
   onWarn(...args) {
-    console.error("Warn", ...args);
+    console.error(new Date().toString(), "Warn:", ...args);
   }
 
   onDebug(debug) {
     if (!/"op":(?:3|5)/.test(debug)) {
-      console.error("Debug", debug);
+      console.error(new Date().toString(), "Debug:", debug);
     }
   }
 
   onError(...args) {
-    console.error("Error", ...args);
+    console.error(new Date().toString(), "Error:", ...args);
   }
 
   onDisconnect(...args) {
-    console.error("Disconnected", ...args);
-    this.connection.disconnect(null, true);
-    this.init(this.voice);
+    console.error(new Date().toString(), "Disconnected:", ...args);
+    //this.connection.disconnect(null, true);
+    //this.init(this.voice);
   }
 
   _init(channel) {
+    console.log(new Date().toString(), "Calling joinVoiceChannel");
     return this._adapter.joinVoiceChannel(channel.id).then(connection => {
       let oldConnection = this.connection;
       if (oldConnection) {
@@ -136,15 +137,15 @@ class MusicPlayer {
   }
 
   init(channel) {
-    var _this3 = this;
-
-    return _asyncToGenerator(function* () {
-      let initReady = _this3._init(channel);
-      _this3.ready = initReady;
-      yield _this3.ready;
-      _this3.ready = true;
+    let initReady;
+    if (!this.ready.hasOwnProperty("then")) {
+      initReady = this._init(channel);
+      this.ready = initReady;
+    }
+    return this.ready.then(() => {
+      this.ready = true;
       return initReady;
-    })();
+    });
   }
 
   add(link, user) {
@@ -153,30 +154,38 @@ class MusicPlayer {
   }
 
   play() {
-    var _this4 = this;
+    var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      if (_this4.ready === false) _this4.init(_this4.voice);
+      if ((_this3.ready === false || _this3.connection.ready === false) && !_this3.ready.hasOwnProperty("then")) _this3.init(_this3.voice);
       try {
-        if (_this4.ready.then) yield _this4.ready;
+        if (_this3.ready.hasOwnProperty("then")) {
+          yield _this3.ready;
+          console.log(new Date().toString(), "Awaited Ready");
+          console.log(new Date().toString(), "Awaited Ready status Ready:", _this3.connection.ready, " connecting:", _this3.connection.connecting, "channel", _this3.voice.name);
+        }
+        //return this.play();
       } catch (error) {
+        console.log(new Date().toString(), "l40", error);
         return;
       }
-      if (_this4.queue.length > 0) {
-        console.log("queue", _this4.queue);
+      if (_this3.queue.length > 0) {
+        console.log(new Date().toString(), "queue", _this3.queue);
         let url;
+        let song = _this3.queue[0];
         try {
-          url = _this4.music.getStreamUrl((yield _this4.music.getCachingInfoLink(_this4.queue[0].link)));
+          url = _this3.music.getStreamUrl((yield _this3.music.getCachingInfoLink(song.link)));
         } catch (error) {
-          _this4.onEnd();
+          _this3.onEnd();
           return;
         }
-        _this4.currentSong = { link: _this4.queue[0], user_id: _this4.queue[0].user_id, startTime: Date.now() };
-        _this4.saveCurrentSong();
-        console.log("Attempting to play ", url);
-        console.log("Current connection status Ready:", _this4.connection.ready, " connecting:", _this4.connection.connecting);
-        let result = yield _this4.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
-        console.log("Play result ", result);
+        _this3.currentSong = { link: song.link, user_id: song.user_id, startTime: Date.now() };
+        _this3.saveCurrentSong();
+        console.log(new Date().toString(), "Attempting to play ", url);
+        console.log(new Date().toString(), "Current connection status Ready:", _this3.connection.ready, " connecting:", _this3.connection.connecting, "channel", _this3.voice.name);
+        if (_this3.connection.playing) return _this3.connection.stopPlaying();
+        let result = yield _this3.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
+        console.log(new Date().toString(), "Play result ", result);
       }
     })();
   }
