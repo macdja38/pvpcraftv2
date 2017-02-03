@@ -57,7 +57,7 @@ export default class ConfigJSON {
       return data;
     }
     let key = keys.shift();
-    if (typeof data === "object" && data.hasOwnProperty(key)) {
+    if (typeof data === "object" && data !== null && data.hasOwnProperty(key)) {
       return this._recursiveGet(keys, data[key], {fallback, failThrow});
     } else {
       if (fallback) return fallback;
