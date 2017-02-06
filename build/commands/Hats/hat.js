@@ -75,7 +75,7 @@ class Hat extends _Command2.default {
             command.sendMessage("Here is your hat!", { name: "hat.png", file: buffer });
           });
         } catch (errors) {
-          command.sendMessage(`Sorry the error ${ errors } occurred while processing your command, make sure you have a non-default avatar`);
+          command.sendMessage(`Sorry the error ${errors} occurred while processing your command, make sure you have a non-default avatar`);
           console.error("error", errors);
         }
       });

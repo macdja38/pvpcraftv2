@@ -32,10 +32,10 @@ const getPrefix = exports.getPrefix = function (content, prefixes, id) {
     }
   }
   // see if the user is mentioned
-  let mentionRegex = new RegExp(`^<@!?${ id }>`);
+  let mentionRegex = new RegExp(`^<@!?${id}>`);
   if (mentionRegex.test(m)) {
     m = m.replace(mentionRegex, "");
-    return { prefix: `<@${ id }>`, content: m };
+    return { prefix: `<@${id}>`, content: m };
   }
   return false;
 };

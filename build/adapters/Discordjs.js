@@ -64,13 +64,13 @@ class DiscordjsAdapter extends _Adapter2.default {
   startEvents() {
     this._client.on("ready", () => {
       /* eslint-disable */
-      console.log(`Connected as: ${ this._client.user.username }`);
+      console.log(`Connected as: ${this._client.user.username}`);
       /* eslint-enable */
     });
 
     this._client.on("message", message => {
       this._commandHandler.onMessage(new DiscordjsMessage(message));
-      console.log(`discordjs ${ this._client.user.username } ${ message.author.username } ${ message.content }`);
+      console.log(`discordjs ${this._client.user.username} ${message.author.username} ${message.content}`);
     });
   }
 }

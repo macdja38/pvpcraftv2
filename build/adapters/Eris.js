@@ -72,7 +72,10 @@ class ErisAdapter extends _Adapter2.default {
 
     return _asyncToGenerator(function* () {
       _this._client.on("error", function (e) {
-        return console.error("Eris error", e);
+        console.error("Eris error", e);
+        if (e.code === "ENOTFOUND") {
+          process.exit(0);
+        }
       });
       console.log(_this._configJSON);
       yield _this._client.connect();
@@ -86,13 +89,13 @@ class ErisAdapter extends _Adapter2.default {
         this._client.editStatus(this._adapterSettings.status.status, this._adapterSettings.status.game);
       }
       /* eslint-disable */
-      console.log(`Connected as: ${ this._client.user.username }`);
+      console.log(`Connected as: ${this._client.user.username}`);
       /* eslint-enable */
     });
 
     this._client.on("messageCreate", message => {
       this._commandHandler.onMessage(new ErisMessage(message, this._client));
-      console.log(`eris ${ this._client.user.username } ${ message.author.username } ${ message.content }`);
+      console.log(`eris ${this._client.user.username} ${message.author.username} ${message.content}`);
     });
   }
 
@@ -132,7 +135,7 @@ class ErisMessage extends _Message2.default {
   }
 
   reply(string, ...args) {
-    return this._client.createMessage(this._message.channel.id, `${ this._message.author.mention }, ${ string }`, ...args);
+    return this._client.createMessage(this._message.channel.id, `${this._message.author.mention}, ${string}`, ...args);
   }
 
   sendMessage(...args) {

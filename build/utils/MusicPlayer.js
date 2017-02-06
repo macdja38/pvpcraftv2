@@ -183,8 +183,19 @@ class MusicPlayer {
         _this3.saveCurrentSong();
         console.log(new Date().toString(), "Attempting to play ", url);
         console.log(new Date().toString(), "Current connection status Ready:", _this3.connection.ready, " connecting:", _this3.connection.connecting, "channel", _this3.voice.name);
+        if ((_this3.ready === false || _this3.connection.ready === false) && !_this3.ready.hasOwnProperty("then")) _this3.init(_this3.voice);
+        if (_this3.ready.hasOwnProperty("then")) {
+          yield _this3.ready;
+          console.log(new Date().toString(), "Awaited Ready 2");
+          console.log(new Date().toString(), "Awaited Ready status Ready 2:", _this3.connection.ready, " connecting:", _this3.connection.connecting, "channel", _this3.voice.name);
+        }
         if (_this3.connection.playing) return _this3.connection.stopPlaying();
-        let result = yield _this3.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
+        let result;
+        try {
+          result = yield _this3.connection.play(url.url, { encoderArgs: ["-c", "copy"] });
+        } catch (err) {
+          console.error("Play failed", err);
+        }
         console.log(new Date().toString(), "Play result ", result);
       }
     })();

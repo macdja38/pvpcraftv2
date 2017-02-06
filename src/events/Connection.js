@@ -10,8 +10,9 @@ import "source-map-support/register";
 import EventEmitter from 'events';
 
 export default class Connection extends EventEmitter {
-  constructor(connection) {
+  constructor(connection, client) {
     super();
     this._connection = connection;
+    this._client = client;
   }
 }

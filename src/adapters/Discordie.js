@@ -89,7 +89,7 @@ export default class DiscordieAdapter extends Adapter {
   joinVoiceChannel(channelId) {
     let channel = this._client.Channels.get(channelId);
     if (channel) {
-      return channel.join().then(c => new DiscordieConnection(c));
+      return channel.join().then(c => new DiscordieConnection(c, this._client));
     }
     return Promise.reject("Channel not found");
   }
@@ -138,11 +138,20 @@ class DiscordieUser extends User {
 }
 
 class DiscordieConnection extends Connection {
-  constructor(connectionInfo) {
-    super(connectionInfo.voiceConnection);
+  constructor(connectionInfo, client) {
+    super(connectionInfo.voiceConnection, client);
   }
 
   play(data) {
+    console.log(`discordie connection state connection is ${this._connection.disposed} and stream is `, this._connection.canStream);
+    if (this._connection.disposed || !this._connection.canStream) {
+      console.log("Attempting reconnect");
+      let channel = this._client.Channels.get(this._connection.channelId);
+      if (channel) {
+        console.log("found channel, joining");
+        return channel.join().then(c => {this._connection = c.voiceConnection; console.log("joined"); this.play(data)});
+      }
+    }
     data = { container: "god knows", encoding: "even worse", url: data };
     console.log("Discordie Music Playing Code here.", data);
     let encoder;

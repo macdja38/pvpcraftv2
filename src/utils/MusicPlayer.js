@@ -164,8 +164,19 @@ export class MusicPlayer {
       this.saveCurrentSong();
       console.log(new Date().toString(), "Attempting to play ", url);
       console.log(new Date().toString(), "Current connection status Ready:", this.connection.ready, " connecting:", this.connection.connecting, "channel", this.voice.name);
+      if ((this.ready === false || this.connection.ready === false) && !this.ready.hasOwnProperty("then")) this.init(this.voice);
+      if (this.ready.hasOwnProperty("then")) {
+        await this.ready;
+        console.log(new Date().toString(), "Awaited Ready 2");
+        console.log(new Date().toString(), "Awaited Ready status Ready 2:", this.connection.ready, " connecting:", this.connection.connecting, "channel", this.voice.name);
+      }
       if (this.connection.playing) return this.connection.stopPlaying();
-      let result = await this.connection.play(url.url, {encoderArgs: ["-c", "copy"]});
+      let result;
+      try {
+        result = await this.connection.play(url.url, {encoderArgs: ["-c", "copy"]});
+      } catch (err) {
+        console.error("Play failed", err);
+      }
       console.log(new Date().toString(), "Play result ", result);
     }
   }

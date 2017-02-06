@@ -44,7 +44,12 @@ export default class ErisAdapter extends Adapter {
   }
 
   async login() {
-    this._client.on("error", e => console.error("Eris error", e));
+    this._client.on("error", e => {
+      console.error("Eris error", e);
+      if (e.code === "ENOTFOUND") {
+        process.exit(0);
+      }
+    });
     console.log(this._configJSON);
     await this._client.connect();
     this.startEvents();

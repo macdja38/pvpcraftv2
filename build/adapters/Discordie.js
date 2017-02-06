@@ -97,13 +97,13 @@ class DiscordieAdapter extends _Adapter2.default {
   startEvents() {
     this._client.Dispatcher.on("GATEWAY_READY", () => {
       /* eslint-disable */
-      console.log(`Connected as: ${ this._client.User.username }`);
+      console.log(`Connected as: ${this._client.User.username}`);
       /* eslint-enable */
     });
 
     this._client.Dispatcher.on("MESSAGE_CREATE", e => {
       this._commandHandler.onMessage(new DiscordieMessage(e, this._client));
-      console.log(`discordie ${ this._client.User.username } ${ e.message.author.username } ${ e.message.content }`);
+      console.log(`discordie ${this._client.User.username} ${e.message.author.username} ${e.message.content}`);
     });
 
     this._client.Dispatcher.on("GUILD_ROLE_UPDATE", e => {
@@ -126,7 +126,7 @@ class DiscordieAdapter extends _Adapter2.default {
   joinVoiceChannel(channelId) {
     let channel = this._client.Channels.get(channelId);
     if (channel) {
-      return channel.join().then(c => new DiscordieConnection(c));
+      return channel.join().then(c => new DiscordieConnection(c, this._client));
     }
     return Promise.reject("Channel not found");
   }
@@ -176,11 +176,22 @@ class DiscordieUser extends _User2.default {
 }
 
 class DiscordieConnection extends _Connection2.default {
-  constructor(connectionInfo) {
-    super(connectionInfo.voiceConnection);
+  constructor(connectionInfo, client) {
+    super(connectionInfo.voiceConnection, client);
   }
 
   play(data) {
+    console.log(`discordie connection state connection is ${this._connection.disposed} and stream is `, this._connection.canStream);
+    if (this._connection.disposed || !this._connection.canStream) {
+      console.log("Attempting reconnect");
+      let channel = this._client.Channels.get(this._connection.channelId);
+      if (channel) {
+        console.log("found channel, joining");
+        return channel.join().then(c => {
+          this._connection = c.voiceConnection;console.log("joined");this.play(data);
+        });
+      }
+    }
     data = { container: "god knows", encoding: "even worse", url: data };
     console.log("Discordie Music Playing Code here.", data);
     let encoder;

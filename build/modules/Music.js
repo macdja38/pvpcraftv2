@@ -125,7 +125,7 @@ class Music extends _Module2.default {
 
   search(string) {
     return new Promise((resolve, reject) => {
-      let requestUrl = "https://www.googleapis.com/youtube/v3/search" + `?part=snippet&q=${ string }&key=${ this.apiKey }&regionCode=${ this.regionCode }`;
+      let requestUrl = "https://www.googleapis.com/youtube/v3/search" + `?part=snippet&q=${string}&key=${this.apiKey}&regionCode=${this.regionCode}`;
       (0, _request2.default)({ method: "GET", uri: requestUrl, gzip: true }, (error, response) => {
         if (error) reject(error);
         resolve(JSON.parse(response.body));
@@ -150,7 +150,7 @@ class Music extends _Module2.default {
 
     return _asyncToGenerator(function* () {
       return new Promise(function (resolve, reject) {
-        let requestUrl = `https://temp.discord.fm/libraries/${ id }/json`;
+        let requestUrl = `https://temp.discord.fm/libraries/${id}/json`;
         (0, _request2.default)({ method: "GET", uri: requestUrl, gzip: true }, function (error, response) {
           if (error) reject(error);
           resolve(_this6.normalizeDiscordFMPlaylist(JSON.parse(response.body)));
@@ -166,7 +166,7 @@ class Music extends _Module2.default {
         normalised.reqeustee = item.requestee;
       }
       if (item.service === "YouTubeVideo") {
-        normalised.url = `https://www.youtube.com/watch?v=${ item.identifier }`;
+        normalised.url = `https://www.youtube.com/watch?v=${item.identifier}`;
       } else if (item.service === "SoundCloudTrack") {
         normalised.url = item.url;
       }
