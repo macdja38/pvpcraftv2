@@ -57,7 +57,7 @@ export class Hat extends Command {
         });
         stream.on("end", () => {
           let buffer = Buffer.concat(buffers);
-          command.sendMessage({embed: {image: {url: "attachment://hat.png"}, description: "Here is your hat!\nEdit [here](https://christmas.ryke.xyz) | Invite bot [here](https://hat.pvpcraft.ca)"}}, {name: "hat.png", file: buffer});
+          command.sendMessage({embed: {image: {url: "attachment://hat.png"}, description: `Here is your hat!\nEdit [here](https://christmas.ryke.xyz/?id=${msg.author.id}&hash=${msg.author.avatar}) | Invite bot [here](https://hat.pvpcraft.ca)`}}, {name: "hat.png", file: buffer});
         });
       } catch(errors){
         command.sendMessage(`Sorry the error ${errors} occurred while processing your command, make sure you have a non-default avatar`);
