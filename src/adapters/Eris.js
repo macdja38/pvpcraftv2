@@ -31,8 +31,8 @@ export default class ErisAdapter extends Adapter {
     return new Promise((resolve, reject) => {
       this._client.on("ready", ()=>{
         resolve(true);
-      })
-    })
+      });
+    });
   }
 
   get ready() {
